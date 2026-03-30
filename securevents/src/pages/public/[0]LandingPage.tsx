@@ -1,4 +1,4 @@
-import './[0]Landing.css';
+import '../../styles/SecurEventsStyle.css';
 import logo from '../../assets/SecureEventLogo.png';
 import eventImg from '../../assets/EventImg.jpg';
 import { useNavigate } from 'react-router-dom';
@@ -7,11 +7,11 @@ function LandingPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="landing-page">
-            <div className="landing-container">
+        <div className="global-page">
+            <div className="global-container">
 
-                <header className="landing-header">
-                    <button className="about-btn">About</button>
+                <header className="global-header">
+                    <button className="global-btn">About</button>
 
                     <div className="header-actions">
                         <button
@@ -30,17 +30,17 @@ function LandingPage() {
                     </div>
                 </header>
 
-                <main className="landing-main">
-                    <div className="logo-wrapper">
-                        <img src={logo} alt="SecurEvents logo" className="landing-logo" />
+                <main className="global-main">
+                    <div className="global-logo-wrapper">
+                        <img src={logo} alt="SecurEvents logo" className="global-logo" />
                     </div>
 
-                    <div className="landing-content">
-                        <div className="image-box">
-                            <img src={eventImg} alt="Event" className="event-image" />
+                    <div className="global-content">
+                        <div className="global-image-box">
+                            <img src={eventImg} alt="Event" className="global-event-image" />
                         </div>
 
-                        <div className="description-box">
+                        <div className="global-description-box">
                             <h2>Welcome to SecurEvents</h2>
                             <p>
                                 Securely browse events, book tickets, and manage your event experience.
