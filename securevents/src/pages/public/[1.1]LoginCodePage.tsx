@@ -3,11 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import "../../styles/SecurEventsStyle.css";
 import "../../styles/Login&SignUp.css";
 import logo from "../../assets/SecureEventLogo.png";
+import { useLocation } from "react-router-dom";
+
 
 const LoginCodePage: React.FC = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({code: ""});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,38 +38,65 @@ const LoginCodePage: React.FC = () => {
           <div className="global-content-box">
             <div className="login-signup-white-form-card">
               
-              {/* ROW 0: Logo - Top Left */}
+              {/* Logo - Top Left */}
               <div className="login-signup-logo-wrapper">
                 <img src={logo} alt="SecureEvents" className="global-logo" />
               </div>
 
-              {/* ROW 1: LOG IN Title - Centered */}
-              <h2 className="login-title">This is the login pagegeee</h2>
+              {/* LOG IN Title - Centered */}
+              <h2 className="login-title">Check your email!</h2>
+              <p className="code-sent-text">
+                Verification code sent to
+              </p>
+              <p className="email-text">
+                <span>{email}</span>
+              </p>
 
-              {/* ROW 2-5: Form with Send Code button */}
+              {/* Form with Send Code button */}
               <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
                   <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
+                    id="login-code"
+                    type="text"
+                    name="code"
+                    value={formData.code}
                     onChange={handleChange}
                     placeholder=""
                     required
                   />
-                  <label htmlFor="email">Email</label>
+                  <label htmlFor="code-input">Enter Code</label>
                 </div>
 
+                <div className="button-row">
                 <button
-                  type="submit"
-                  disabled={loading}
-                  className="send-code-btn"
+                    type="button"
+                    className="resend-code-btn"
+                    onClick={() => {
+                    console.log("Resend clicked");
+                    // later: resend logic
+                    }}
                 >
-                  {loading ? "Sending Code..." : "Send Code"}
+                    Resend Code
                 </button>
-              </form>
 
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="submit-code-btn"
+                >
+                    Submit
+                </button>
+                </div>
+              </form>
+            <div className="back-button-container">
+                <button
+                    type="button"
+                    className="back-btn"
+                    onClick={() => navigate("/login")}
+                >
+                    ← Back
+                </button>
+            </div>
             </div>
           </div>
         </div>

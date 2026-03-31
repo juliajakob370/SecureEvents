@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
     // TODO: Auth API - send code to email
     setTimeout(() => {
       setLoading(false);
-      navigate("/login-code");
+      navigate("/login-code", { state: { email: formData.email } });
     }, 1500);
   };
 
@@ -34,15 +34,15 @@ const LoginPage: React.FC = () => {
           <div className="global-content-box">
             <div className="login-signup-white-form-card">
               
-              {/* ROW 0: Logo - Top Left */}
+              {/* Logo - Top Left */}
               <div className="login-signup-logo-wrapper">
                 <img src={logo} alt="SecureEvents" className="global-logo" />
               </div>
 
-              {/* ROW 1: LOG IN Title - Centered */}
+              {/* LOG IN Title - Centered */}
               <h2 className="login-title">Welcome back! What's your email?</h2>
 
-              {/* ROW 2-5: Form with Send Code button */}
+              {/* Form with Send Code button */}
               <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
                   <input
@@ -68,7 +68,7 @@ const LoginPage: React.FC = () => {
 
             </div>
 
-            {/* ROW 5: Don't have account? Link */}
+            {/* Don't have account? Link */}
             <div className="auth-footer">
               <p className="auth-footer-text">
                 Don't have an account?{" "}
