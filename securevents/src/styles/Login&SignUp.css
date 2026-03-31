@@ -150,3 +150,100 @@
   width: 50%;              
   text-align: center;
 }
+
+.login-signup-white-form-card .code-sent-text {
+    color: #2a1458;
+    font-size: 14px;
+    margin: 20px 0 0px 0;
+}
+
+.login-signup-white-form-card .email-text {
+    color: #7742f3;
+}
+
+.submit-code-btn {
+    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    transition: all 0.3s;
+    margin-top: 20px;
+    width: 50%;
+    max-width: 400px;
+    padding: 16px;
+    cursor: pointer;
+}
+
+.submit-code-btn:hover:not(:disabled) {
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.6);
+    transform: translateY(-1px);
+}
+
+.submit-code-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* =========================
+   BUTTON ROW (side by side)
+========================= */
+.button-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 20px;
+}
+
+.button-row button {
+  flex: 1;
+}
+
+/* Resend button style */
+.resend-code-btn {
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    transition: all 0.3s;
+    margin-top: 20px;
+    width: 50%;
+    max-width: 400px;
+  background: transparent;
+  border: 2px solid #8b5cf6;
+  color: #8b5cf6;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.resend-code-btn:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* =========================
+   BACK BUTTON (bottom left)
+========================= */
+.back-button-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 15px;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #8b5cf6;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
