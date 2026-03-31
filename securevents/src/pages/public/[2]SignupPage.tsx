@@ -19,7 +19,7 @@ const SignupPage: React.FC = () => {
     // TODO: Auth API - send code to email
     setTimeout(() => {
       setLoading(false);
-      navigate("/signup-code", { state: { firstname: formData.firstName, email: formData.email } });
+      navigate("/signup-code", { state: { firstName: formData.firstName, email: formData.email } });
     }, 1500);
   };
 
@@ -40,7 +40,7 @@ const SignupPage: React.FC = () => {
               </div>
 
               {/* LOG IN Title - Centered */}
-              <h2 className="login-title">Welcome! Events await you!</h2>
+              <h2 className="login-title">Events await you!</h2>
 
               {/* Form with Send Code button */}
               <form onSubmit={handleSubmit} className="login-form">
