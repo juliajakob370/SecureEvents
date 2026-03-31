@@ -5,7 +5,7 @@ import "../../styles/Login&SignUp.css";
 import logo from "../../assets/SecureEventLogo.png";
 
 const LoginPage: React.FC = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ email: ""});
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
