@@ -1,0 +1,92 @@
+.search-form-group {
+  display: flex;             
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  max-width: 700px;
+  flex: 1;
+}
+
+/* INPUT WRAPPER */
+.search-input-wrapper {
+  position: relative;
+  flex: 1;            
+}
+
+/* INPUT */
+.search-input-wrapper input {
+  width: 100%;
+  padding: 14px 12px;
+  font-size: 14px;
+  color: #2a1458;
+
+  border: 2px solid rgba(146, 121, 236, 0.4);
+  border-radius: 10px;
+
+  outline: none;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+/* LABEL */
+.search-input-wrapper label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  color: #5a4c6d;
+  font-size: 14px;
+
+  pointer-events: none;
+  transition: all 0.2s ease;
+
+  background: transparent;
+  padding: 0 4px;
+}
+
+/* FLOAT EFFECT */
+.search-input-wrapper input:focus + label,
+.search-input-wrapper input:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 12px;
+  color: transparent;
+}
+
+/* INPUT FOCUS */
+.search-input-wrapper input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+/* 🔍 BUTTON */
+.search-btn {
+  background: linear-gradient(135deg, #8b5cf6, #c084fc);
+  border: none;
+
+  height: 48px;
+  width: 48px;
+
+  border-radius: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  transition: all 0.2s;
+
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+/* ICON INSIDE BUTTON */
+.search-btn i {
+  color: white;       
+  font-size: 18px;
+}
+
+/* HOVER */
+.search-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.6);
+}

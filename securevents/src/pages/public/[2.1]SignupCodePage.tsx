@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/SecurEventsStyle.css";
 import "../../styles/Login&SignUp.css";
 import logo from "../../assets/SecureEventLogo.png";
-import { useLocation } from "react-router-dom";
 
-
-const LoginCodePage: React.FC = () => {
-  const [formData, setFormData] = useState({code: ""});
+const SignupCodePage: React.FC = () => {
+  const [formData, setFormData] = useState({ code: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const firstName = location.state?.firstName || "";
   const email = location.state?.email || "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,9 +20,10 @@ const LoginCodePage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: Auth API - send code to email
+    // TODO: Verify code with backend
     setTimeout(() => {
       setLoading(false);
+      console.log("Signup code submitted:", formData.code);
       navigate("/main");
     }, 1500);
   };
@@ -31,72 +32,76 @@ const LoginCodePage: React.FC = () => {
     <div className="global-page">
       <div className="global-container auth-container">
         <header className="global-header"></header>
+
         <div
           className="global-content auth-form"
           style={{ gridTemplateColumns: "1fr" }}
         >
           <div className="global-content-box">
             <div className="login-signup-white-form-card">
-              
-              {/* Logo - Top Left */}
+              {/* Logo */}
               <div className="login-signup-logo-wrapper">
                 <img src={logo} alt="SecureEvents" className="global-logo" />
               </div>
 
-              {/* LOG IN Title - Centered */}
-              <h2 className="login-title">Check your email!</h2>
-              <p className="code-sent-text">
-                Verification code sent to
-              </p>
+              {/* Title */}
+              <h2 className="login-title">
+                Welcome {firstName}, check your email!
+              </h2>
+
+              {/* Email text */}
+              <p className="code-sent-text">Verification code sent to</p>
               <p className="email-text">
                 <span>{email}</span>
               </p>
 
-              {/* Form with Send Code button */}
+              {/* Form */}
               <form onSubmit={handleSubmit} className="login-form">
                 <div className="form-group">
                   <input
-                    id="login-code"
+                    id="signup-code"
                     type="text"
                     name="code"
                     value={formData.code}
                     onChange={handleChange}
-                    placeholder=""
+                    placeholder=" "
                     required
                   />
-                  <label htmlFor="code-input">Enter Code</label>
+                  <label htmlFor="signup-code">Enter Code</label>
                 </div>
 
+                {/* Buttons */}
                 <div className="button-row">
-                <button
+                  <button
                     type="button"
                     className="resend-code-btn"
                     onClick={() => {
-                    console.log("Resend clicked");
-                    // later: resend logic
+                      console.log("Resend signup code");
                     }}
-                >
+                  >
                     Resend Code
-                </button>
+                  </button>
 
-                <button
+                  <button
                     type="submit"
                     disabled={loading}
                     className="submit-code-btn"
-                >
-                    Submit
-                </button>
+                  >
+                    {loading ? "Verifying..." : "Submit"}
+                  </button>
                 </div>
               </form>
-            <div className="back-button-container">
+
+              {/* Back button */}
+              <div className="back-button-container">
                 <button
-                    type="button"
-                    className="back-btn"
-                    onClick={() => navigate("/login")}
+                  type="button"
+                  className="back-btn"
+                  onClick={() => navigate("/signup")}
                 >
-                    ← Back
+                  ← Back
                 </button>
-            </div>
+              </div>
             </div>
           </div>
         </div>
@@ -105,4 +110,4 @@ const LoginCodePage: React.FC = () => {
   );
 };
 
-export default LoginCodePage;
+export default SignupCodePage;
