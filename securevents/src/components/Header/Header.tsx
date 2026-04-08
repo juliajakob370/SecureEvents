@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({
     <div className="header">
 
       {/* LEFT: Logo */}
-      <div className="header-left" onClick={() => navigate("/")}>
+      <div className="header-left">
         <img src={logo} alt="SecureEvents" className="header-logo" />
       </div>
 
