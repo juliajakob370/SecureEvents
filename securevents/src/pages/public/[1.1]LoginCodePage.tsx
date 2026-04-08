@@ -23,7 +23,7 @@ const LoginCodePage: React.FC = () => {
     // TODO: Auth API - send code to email
     setTimeout(() => {
       setLoading(false);
-      navigate("/login-code");
+      navigate("/main");
     }, 1500);
   };
 

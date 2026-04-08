@@ -5,6 +5,8 @@ import LoginPage from './pages/public/[1]LoginPage';
 import LoginCodePage from './pages/public/[1.1]LoginCodePage';
 import SignupPage from './pages/public/[2]SignupPage';
 import SignupCodePage from "./pages/public/[2.1]SignupCodePage";
+import MainPage from "./pages/dashboard/[3]MainPage";
+
 
 function App() {
     return (
@@ -15,6 +17,7 @@ function App() {
                 <Route path="/login-code" element={<LoginCodePage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/signup-code" element={<SignupCodePage />} />
+                <Route path="/main" element={<MainPage />} />
             </Routes>
         </Router>
     );

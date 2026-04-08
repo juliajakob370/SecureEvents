@@ -24,6 +24,7 @@ const SignupCodePage: React.FC = () => {
     setTimeout(() => {
       setLoading(false);
       console.log("Signup code submitted:", formData.code);
+      navigate("/main");
     }, 1500);
   };
 
