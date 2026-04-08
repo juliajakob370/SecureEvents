@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import "bootstrap-icons/font/bootstrap-icons.css";
 import LandingPage from './pages/public/[0]LandingPage';
 import LoginPage from './pages/public/[1]LoginPage';
 import LoginCodePage from './pages/public/[1.1]LoginCodePage';

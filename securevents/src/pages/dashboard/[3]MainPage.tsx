@@ -10,8 +10,7 @@ const MainPage: React.FC = () => {
       
       {/* HEADER */}
       <Header
-        centerType="title"
-        title="Search"
+        centerType="search"
         showProfile={true}
         profileImage={profile0}
       />

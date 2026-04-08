@@ -1,0 +1,56 @@
+.menu-container {
+  position: relative;
+}
+
+/* BUTTON */
+.menu-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 40px;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* DROPDOWN */
+.menu-dropdown {
+  position: absolute;
+  top: 40px;
+  right: 0;
+
+  background: white;
+  border-radius: 12px;
+
+  min-width: 200px;
+  padding: 8px 0;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+/* ITEM */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 16px;
+  cursor: pointer;
+
+  color: #2a1458;
+  transition: all 0.2s;
+}
+
+.menu-item i {
+  font-size: 16px;
+  color: #8b5cf6;
+}
+
+/* HOVER */
+.menu-item:hover {
+  color: #c084fc;
+  transform: scale(1.1);
+}

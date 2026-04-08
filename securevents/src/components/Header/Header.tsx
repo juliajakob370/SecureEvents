@@ -1,8 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
+import SearchBar from "../SearchBar/SearchBar";
 import logo from "../../assets/SecureEventLogo.png";
 import defaultProfile from "../../assets/profilePics/profile1.png";
+import MenuDropdown from "../MenuDropdown/MenuDropdown";
+
+const menuItems = [
+  { label: "My Tickets", icon: "bi-ticket", path: "/tickets" },
+  { label: "My Events", icon: "bi-calendar-event", path: "/events" },
+  { label: "Post Event", icon: "bi-plus-circle", path: "/post-event" },
+  { label: "Log Out", icon: "bi-box-arrow-right", path: "/" }
+];
 
 type HeaderProps = {
   centerType?: "title" | "search";
@@ -33,22 +42,14 @@ const Header: React.FC<HeaderProps> = ({
       <div className="header-center">
         {centerType === "title" && <h2>{title}</h2>}
 
-        {centerType === "search" && (
-          <input
-            type="text"
-            className="header-search"
-            placeholder="Search events..."
-          />
-        )}
+        {centerType === "search" && <SearchBar />}
       </div>
 
       {/* RIGHT: Menu + Profile/Home */}
       <div className="header-right">
 
         {/* Menu icon */}
-        <div className="menu-icon">
-          ☰
-        </div>
+        <MenuDropdown items={menuItems} />
 
         {/* Profile picture */}
         {showProfile && (
@@ -60,13 +61,15 @@ const Header: React.FC<HeaderProps> = ({
           />
         )}
 
+        
+
         {/* Home button */}
         {showHome && (
           <div
             className="header-home"
             onClick={() => navigate("/")}
           >
-            🏠
+            <i className="bi bi-house"></i>
           </div>
         )}
 
