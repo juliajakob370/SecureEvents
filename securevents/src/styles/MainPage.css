@@ -14,7 +14,7 @@
 
 /* SCROLL AREA */
 .events-scroll {
-  max-height: 500px;   
+  height: calc(100vh - 200px);  
   overflow-y: auto;
 
   display: flex;
@@ -35,7 +35,7 @@
   font-weight: bold;
 }
 
-/* SCROLLBAR (optional but NICE) */
+/* SCROLLBAR */
 .events-scroll::-webkit-scrollbar {
   width: 8px;
 }
