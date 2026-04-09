@@ -1,0 +1,20 @@
+/* Scroll spacing for dashboard About page */
+.about-dashboard-scroll {
+    padding: 24px;
+}
+
+/* Main white card inside dashboard */
+.about-dashboard-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 24px rgba(42, 20, 88, 0.12);
+    color: #2a1458;
+    line-height: 1.8;
+}
+
+    /* Title styling */
+    .about-dashboard-card h2 {
+        margin-top: 0;
+        color: #6d28d9;
+    }

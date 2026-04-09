@@ -1,3 +1,4 @@
+//[0]LandingPage.tsx
 import '../../styles/SecurEventsStyle.css';
 import logo from '../../assets/SecureEventLogo.png';
 import "../../styles/[0]LandingPage.css";
@@ -12,8 +13,9 @@ function LandingPage() {
             <div className="global-container">
 
                 <header className="global-header">
-                    <button className="global-btn">About</button>
-
+                    <button className="global-btn" onClick={() => navigate("/about")}>
+                        About
+                    </button>
                     <div className="header-actions">
                         <button
                             className="signup-btn"

@@ -1,0 +1,204 @@
+/* Scroll spacing inside dashboard container */
+.account-scroll {
+    padding: 24px;
+}
+
+/* Main white card layout for account page */
+.account-card {
+    display: flex;
+    gap: 40px;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 24px rgba(42, 20, 88, 0.12);
+    min-height: 500px;
+}
+
+/* Left section for profile image and button */
+.account-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    min-width: 220px;
+}
+
+/* Circular profile image styling */
+.account-profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #8b5cf6;
+    background: #f5f3ff;
+}
+
+/* Shared button styles for account actions */
+.change-picture-btn,
+.save-account-btn,
+.choose-profile-btn {
+    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
+}
+
+    /* Hover effect for buttons */
+    .change-picture-btn:hover,
+    .save-account-btn:hover,
+    .choose-profile-btn:hover {
+        transform: translateY(-1px);
+    }
+
+/* Right section for form fields */
+.account-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* Individual field container */
+.account-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    /* Labels for inputs */
+    .account-field label {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2a1458;
+    }
+
+    /* Input styling */
+    .account-field input {
+        padding: 14px;
+        border-radius: 10px;
+        border: 2px solid #e9d5ff;
+        font-size: 15px;
+        outline: none;
+    }
+
+        /* Input focus effect */
+        .account-field input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+/* Placeholder box for payment section */
+.payment-placeholder {
+    min-height: 80px;
+    border-radius: 10px;
+    background: #f8f5ff;
+    border: 2px dashed #d8b4fe;
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    color: #6b5a8e;
+}
+
+/* Save button alignment */
+.save-account-btn {
+    width: fit-content;
+    align-self: flex-end;
+}
+
+/* Overlay background for popup */
+.profile-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 10, 40, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* Popup container */
+.profile-popup {
+    width: 90%;
+    max-width: 700px;
+    background: white;
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+    /* Popup title */
+    .profile-popup h3 {
+        margin-top: 0;
+        color: #2a1458;
+        text-align: center;
+    }
+
+/* Close button (X) */
+.close-popup-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #444;
+}
+
+/* Grid for profile images */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin: 24px 0;
+}
+
+/* Individual profile option */
+.profile-choice {
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: #faf7ff;
+}
+
+    /* Profile image inside grid */
+    .profile-choice img {
+        width: 100%;
+        height: 100px;
+        object-fit: contain;
+    }
+
+    /* Hover + selected state */
+    .profile-choice:hover,
+    .profile-choice.selected {
+        border-color: #8b5cf6;
+        box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+    }
+
+/* Choose button alignment */
+.choose-profile-btn {
+    display: block;
+    margin-left: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .account-card {
+        flex-direction: column;
+    }
+
+    .profile-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .save-account-btn {
+        align-self: stretch;
+    }
+}

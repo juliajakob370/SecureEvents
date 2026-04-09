@@ -1,0 +1,23 @@
+/* Main card for public About page content */
+.about-public-card {
+    max-width: 800px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.25);
+    line-height: 1.8;
+}
+
+    /* Title styling */
+    .about-public-card h2 {
+        margin-top: 0;
+        color: #d8b4fe;
+        font-size: 32px;
+    }
+
+/* Makes logo clickable */
+.about-logo-clickable {
+    cursor: pointer;
+}
