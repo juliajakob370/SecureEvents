@@ -1,3 +1,4 @@
+//[2.1]SignupCodePage.tsx
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/SecurEventsStyle.css";
