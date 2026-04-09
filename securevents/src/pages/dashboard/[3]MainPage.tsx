@@ -55,6 +55,16 @@ const MainPage: React.FC = () => {
               dateTime="Aug 12 • 7:00 PM"
             />
 
+            <EventCard
+              title="Super Cool Event"
+              organizer="Bibi"
+              location="Waterloo, ON"
+              price="$100"
+              image="https://koreajoongangdaily.joins.com/data/photo/2022/11/21/159f5073-0127-4463-ba60-f15c4292d62c.jpg"
+              dateTime="Aug 12 • 7:00 PM"
+            />
+
+
           </div>
 
         </div>
