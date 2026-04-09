@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import SearchBar from "../SearchBar/SearchBar";
 import logo from "../../assets/SecureEventLogo.png";
-import defaultProfile from "../../assets/profilePics/profile1.png";
+import defaultProfile from "../../assets/profilePics/profile0.png";
 import MenuDropdown from "../MenuDropdown/MenuDropdown";
 
 const menuItems = [
-  { label: "My Tickets", icon: "bi-ticket", path: "/tickets" },
+  { label: "My Tickets", icon: "bi-ticket-perforated", path: "/tickets" },
   { label: "My Events", icon: "bi-calendar-event", path: "/events" },
   { label: "Post Event", icon: "bi-plus-circle", path: "/post-event" },
   { label: "Log Out", icon: "bi-box-arrow-right", path: "/" }
@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({
         {showHome && (
           <div
             className="header-home"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/main")}
           >
             <i className="bi bi-house"></i>
           </div>
