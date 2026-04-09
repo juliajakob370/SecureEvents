@@ -1,115 +1,236 @@
-/* Scroll spacing inside dashboard container */
+/* Scroll spacing inside the dashboard container */
 .account-scroll {
-    padding: 24px;
+    padding: 28px;
 }
 
-/* Main white card layout for account page */
-.account-card {
-    display: flex;
-    gap: 40px;
-    background: white;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 8px 24px rgba(42, 20, 88, 0.12);
-    min-height: 500px;
+/* Main two-column layout */
+.account-page-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 28px;
+    align-items: start;
 }
 
-/* Left section for profile image and button */
-.account-left {
+/* Left profile card */
+.account-profile-card {
+    background: linear-gradient(180deg, #ffffff 0%, #faf7ff 100%);
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-shadow: 0 10px 30px rgba(42, 20, 88, 0.12);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
-    min-width: 220px;
+    justify-content: space-between;
+    min-height: 520px;
+    border: 1px solid rgba(192, 132, 252, 0.18);
 }
 
-/* Circular profile image styling */
-.account-profile-image {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid #8b5cf6;
-    background: #f5f3ff;
-}
-
-/* Shared button styles for account actions */
-.change-picture-btn,
-.save-account-btn,
-.choose-profile-btn {
-    background: linear-gradient(135deg, #8b5cf6, #c084fc);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 18px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 14px rgba(139, 92, 246, 0.3);
-}
-
-    /* Hover effect for buttons */
-    .change-picture-btn:hover,
-    .save-account-btn:hover,
-    .choose-profile-btn:hover {
-        transform: translateY(-1px);
-    }
-
-/* Right section for form fields */
-.account-right {
-    flex: 1;
+/* Top profile content */
+.account-profile-top {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    text-align: center;
 }
 
-/* Individual field container */
+/* Main selected profile image */
+.account-profile-image {
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #8b5cf6;
+    background: #f5f3ff;
+    box-shadow: 0 0 0 10px rgba(139, 92, 246, 0.08);
+}
+
+/* Profile name */
+.account-profile-name {
+    margin: 0;
+    font-size: 28px;
+    color: #2a1458;
+    font-weight: 700;
+}
+
+/* Profile email */
+.account-profile-email {
+    margin: 0;
+    color: #7c6b9e;
+    font-size: 15px;
+    word-break: break-word;
+}
+
+/* Right side area */
+.account-details-area {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* White section cards */
+.account-section-card {
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(42, 20, 88, 0.1);
+    border: 1px solid rgba(192, 132, 252, 0.14);
+}
+
+/* Section heading area */
+.account-section-header {
+    margin-bottom: 20px;
+}
+
+    .account-section-header h3 {
+        margin: 0 0 6px;
+        font-size: 24px;
+        color: #2a1458;
+    }
+
+    .account-section-header p {
+        margin: 0;
+        color: #7c6b9e;
+        font-size: 14px;
+    }
+
+/* Grid for fields */
+.account-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+/* Make a field take full row */
+.account-field-full {
+    grid-column: 1 / -1;
+}
+
+/* Field block */
 .account-field {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-    /* Labels for inputs */
+    /* Labels */
     .account-field label {
-        font-size: 18px;
+        font-size: 15px;
         font-weight: 600;
+        color: #4c2f77;
+    }
+
+    /* Inputs */
+    .account-field input {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 2px solid #eee4ff;
+        background: #fcfbff;
+        font-size: 15px;
+        outline: none;
+        transition: 0.2s ease;
         color: #2a1458;
     }
 
-    /* Input styling */
-    .account-field input {
-        padding: 14px;
-        border-radius: 10px;
-        border: 2px solid #e9d5ff;
-        font-size: 15px;
-        outline: none;
-    }
-
-        /* Input focus effect */
+        /* Focus effect */
         .account-field input:focus {
             border-color: #8b5cf6;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
+            background: white;
         }
 
-/* Placeholder box for payment section */
-.payment-placeholder {
-    min-height: 80px;
-    border-radius: 10px;
-    background: #f8f5ff;
-    border: 2px dashed #d8b4fe;
+/* Payment info wrapper */
+.payment-info-box {
     display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+/* Payment preview card */
+.payment-card-preview {
+    background: linear-gradient(135deg, #5b2aa8, #b277ff);
+    border-radius: 22px;
+    padding: 24px;
+    color: white;
+    box-shadow: 0 12px 24px rgba(91, 42, 168, 0.28);
+}
+
+/* Top row of payment card */
+.payment-card-top {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    padding: 16px;
-    color: #6b5a8e;
 }
 
-/* Save button alignment */
-.save-account-btn {
-    width: fit-content;
-    align-self: flex-end;
+/* Fake card chip */
+.payment-chip {
+    width: 42px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.55);
+    display: inline-block;
 }
 
-/* Overlay background for popup */
+/* Card brand */
+.payment-brand {
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+/* Card number */
+.payment-card-number {
+    margin: 28px 0 18px;
+    font-size: 24px;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+/* Bottom row of card */
+.payment-card-bottom small {
+    display: block;
+    opacity: 0.8;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.payment-card-bottom p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Bottom action row */
+.account-actions-row {
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Shared action buttons */
+.change-picture-btn,
+.save-account-btn,
+.choose-profile-btn {
+    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 20px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.28);
+    transition: 0.2s ease;
+}
+
+    /* Hover effect */
+    .change-picture-btn:hover,
+    .save-account-btn:hover,
+    .choose-profile-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+    }
+
+/* Popup overlay */
 .profile-popup-overlay {
     position: fixed;
     inset: 0;
@@ -118,27 +239,36 @@
     justify-content: center;
     align-items: center;
     z-index: 2000;
+    padding: 20px;
 }
 
-/* Popup container */
+/* Popup card */
 .profile-popup {
-    width: 90%;
-    max-width: 700px;
+    width: 100%;
+    max-width: 760px;
     background: white;
-    border-radius: 20px;
-    padding: 28px;
+    border-radius: 24px;
+    padding: 30px;
     position: relative;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
 }
 
     /* Popup title */
     .profile-popup h3 {
-        margin-top: 0;
+        margin: 0;
         color: #2a1458;
         text-align: center;
+        font-size: 28px;
     }
 
-/* Close button (X) */
+/* Popup subtitle */
+.profile-popup-subtitle {
+    margin: 8px 0 0;
+    text-align: center;
+    color: #7c6b9e;
+}
+
+/* Close button */
 .close-popup-btn {
     position: absolute;
     top: 14px;
@@ -150,25 +280,25 @@
     color: #444;
 }
 
-/* Grid for profile images */
+/* Grid for profile image options */
 .profile-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 18px;
-    margin: 24px 0;
+    margin: 24px 0 28px;
 }
 
-/* Individual profile option */
+/* Each profile option */
 .profile-choice {
     border: 3px solid transparent;
-    border-radius: 16px;
-    padding: 10px;
+    border-radius: 18px;
+    padding: 12px;
     cursor: pointer;
     transition: 0.2s;
     background: #faf7ff;
 }
 
-    /* Profile image inside grid */
+    /* Image inside option */
     .profile-choice img {
         width: 100%;
         height: 100px;
@@ -179,7 +309,7 @@
     .profile-choice:hover,
     .profile-choice.selected {
         border-color: #8b5cf6;
-        box-shadow: 0 0 12px rgba(139, 92, 246, 0.25);
+        box-shadow: 0 0 14px rgba(139, 92, 246, 0.24);
     }
 
 /* Choose button alignment */
@@ -188,17 +318,36 @@
     margin-left: auto;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .account-card {
-        flex-direction: column;
+/* Tablet/mobile layout */
+@media (max-width: 900px) {
+    .account-page-layout {
+        grid-template-columns: 1fr;
     }
 
+    .account-profile-card {
+        min-height: auto;
+    }
+
+    .account-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .account-field-full {
+        grid-column: auto;
+    }
+}
+
+/* Smaller popup grid */
+@media (max-width: 768px) {
     .profile-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 
+    .account-actions-row {
+        justify-content: stretch;
+    }
+
     .save-account-btn {
-        align-self: stretch;
+        width: 100%;
     }
 }
