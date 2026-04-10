@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// Imports: React state/effect, reusable header, shared styles, and profile images.
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
 import "../../styles/[4]AccountPage.css";
@@ -12,7 +13,16 @@ import profile5 from "../../assets/profilePics/profile5.png";
 import profile6 from "../../assets/profilePics/profile6.png";
 import profile7 from "../../assets/profilePics/profile7.png";
 
-// Profile picture options used in popup.
+// Card type for saved payment methods.
+type SavedCard = {
+    id: number;
+    cardName: string;
+    cardNumber: string;
+    expiryDate: string;
+    billingAddress: string;
+};
+
+// Selectable profile pictures.
 const profileOptions = [
     profile0,
     profile1,
@@ -24,36 +34,68 @@ const profileOptions = [
     profile7,
 ];
 
-// Main account page inside dashboard.
+// Account page component.
 const AccountPage: React.FC = () => {
-    // State for account info and popup.
+    // User info state.
     const [fullName, setFullName] = useState("Current Name");
     const [email, setEmail] = useState("current@email.com");
     const [selectedProfile, setSelectedProfile] = useState(profile0);
     const [showPopup, setShowPopup] = useState(false);
 
-    // State for payment info.
+    // Card form state.
     const [cardName, setCardName] = useState("");
     const [cardNumber, setCardNumber] = useState("");
     const [expiryDate, setExpiryDate] = useState("");
     const [cvv, setCvv] = useState("");
     const [billingAddress, setBillingAddress] = useState("");
-    const [savedCard, setSavedCard] = useState(false);
-    const handleSaveCard = () => {
-        if (cardName && cardNumber && expiryDate && cvv && billingAddress) {
-            setSavedCard(true);
+
+    // Saved cards state.
+    const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
+
+    // Load saved cards on page open.
+    useEffect(() => {
+        const storedCards = localStorage.getItem("secureEventsCards");
+        if (storedCards) {
+            setSavedCards(JSON.parse(storedCards));
         }
+    }, []);
+
+    // Save a new card to localStorage.
+    const handleAddCard = () => {
+        if (!cardName || !cardNumber || !expiryDate || !billingAddress) return;
+
+        const newCard: SavedCard = {
+            id: Date.now(),
+            cardName,
+            cardNumber,
+            expiryDate,
+            billingAddress
+        };
+
+        const updatedCards = [...savedCards, newCard];
+        setSavedCards(updatedCards);
+        localStorage.setItem("secureEventsCards", JSON.stringify(updatedCards));
+
+        setCardName("");
+        setCardNumber("");
+        setExpiryDate("");
+        setCvv("");
+        setBillingAddress("");
     };
+
     return (
         <div style={{ padding: "20px" }}>
             {/* Header */}
-            <Header centerType="title" title="My Account" showHome={true} />
+            <Header
+                centerType="title"
+                title="My Account"
+                showHome={true}
+            />
 
-            {/* Main scroll container */}
+            {/* Main content */}
             <div className="events-container">
                 <div className="events-scroll account-scroll">
                     <div className="account-page-layout">
-
                         {/* Left profile card */}
                         <div className="account-profile-card">
                             <div className="account-profile-top">
@@ -75,10 +117,9 @@ const AccountPage: React.FC = () => {
                             </button>
                         </div>
 
-                        {/* Right content */}
+                        {/* Right side sections */}
                         <div className="account-details-area">
-
-                            {/* Account info card */}
+                            {/* Account details card */}
                             <div className="account-section-card">
                                 <div className="account-section-header">
                                     <h3>Account Information</h3>
@@ -106,108 +147,119 @@ const AccountPage: React.FC = () => {
                                 </div>
                             </div>
 
-                            {/* Payment info card */}
+                            {/* Add card form */}
                             <div className="account-section-card">
                                 <div className="account-section-header">
-                                    <h3>Payment Information</h3>
-                                    <p>Add and manage your saved card details</p>
+                                    <h3>Add Payment Card</h3>
+                                    <p>Add more cards for secure checkout</p>
                                 </div>
 
-                                {!savedCard ? (
-                                    <div className="payment-form-box">
-                                        <div className="account-form-grid">
-                                            <div className="account-field">
-                                                <label>Name on Card</label>
-                                                <input
-                                                    type="text"
-                                                    value={cardName}
-                                                    onChange={(e) => setCardName(e.target.value)}
-                                                    placeholder="Enter cardholder name"
-                                                />
-                                            </div>
-
-                                            <div className="account-field">
-                                                <label>Card Number</label>
-                                                <input
-                                                    type="text"
-                                                    value={cardNumber}
-                                                    onChange={(e) => setCardNumber(e.target.value)}
-                                                    placeholder="1234 5678 9012 3456"
-                                                />
-                                            </div>
-
-                                            <div className="account-field">
-                                                <label>Expiry Date</label>
-                                                <input
-                                                    type="text"
-                                                    value={expiryDate}
-                                                    onChange={(e) => setExpiryDate(e.target.value)}
-                                                    placeholder="MM/YY"
-                                                />
-                                            </div>
-
-                                            <div className="account-field">
-                                                <label>CVV</label>
-                                                <input
-                                                    type="password"
-                                                    value={cvv}
-                                                    onChange={(e) => setCvv(e.target.value)}
-                                                    placeholder="123"
-                                                />
-                                            </div>
-
-                                            <div className="account-field account-field-full">
-                                                <label>Billing Address</label>
-                                                <input
-                                                    type="text"
-                                                    value={billingAddress}
-                                                    onChange={(e) => setBillingAddress(e.target.value)}
-                                                    placeholder="Enter billing address"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="account-actions-row">
-                                            <button className="save-account-btn" onClick={handleSaveCard}>
-                                                Add Card
-                                            </button>
-                                        </div>
+                                <div className="account-form-grid">
+                                    <div className="account-field">
+                                        <label>Name on Card</label>
+                                        <input
+                                            type="text"
+                                            value={cardName}
+                                            onChange={(e) => setCardName(e.target.value)}
+                                        />
                                     </div>
-                                ) : (
-                                    <div className="payment-info-box">
-                                        <div className="payment-card-preview">
-                                            <div className="payment-card-top">
-                                                <span className="payment-chip"></span>
-                                                <span className="payment-brand">VISA</span>
-                                            </div>
 
-                                            <div className="payment-card-number">
-                                                •••• •••• •••• {cardNumber.slice(-4)}
-                                            </div>
-
-                                            <div className="payment-card-bottom">
-                                                <div>
-                                                    <small>Card Holder</small>
-                                                    <p>{cardName}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="billing-summary">
-                                            <p><strong>Expiry:</strong> {expiryDate}</p>
-                                            <p><strong>Billing Address:</strong> {billingAddress}</p>
-                                        </div>
-
-                                        <div className="account-actions-row">
-                                            <button className="change-picture-btn" onClick={() => setSavedCard(false)}>
-                                                Edit Card
-                                            </button>
-                                        </div>
+                                    <div className="account-field">
+                                        <label>Card Number</label>
+                                        <input
+                                            type="text"
+                                            value={cardNumber}
+                                            onChange={(e) => setCardNumber(e.target.value)}
+                                        />
                                     </div>
-                                )}
+
+                                    <div className="account-field">
+                                        <label>Expiry Date</label>
+                                        <input
+                                            type="text"
+                                            value={expiryDate}
+                                            onChange={(e) => setExpiryDate(e.target.value)}
+                                            placeholder="MM/YY"
+                                        />
+                                    </div>
+
+                                    <div className="account-field">
+                                        <label>CVV</label>
+                                        <input
+                                            type="password"
+                                            value={cvv}
+                                            onChange={(e) => setCvv(e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="account-field account-field-full">
+                                        <label>Billing Address</label>
+                                        <input
+                                            type="text"
+                                            value={billingAddress}
+                                            onChange={(e) => setBillingAddress(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="account-actions-row">
+                                    <button className="save-account-btn" onClick={handleAddCard}>
+                                        Add Card
+                                    </button>
+                                </div>
                             </div>
 
-                            {/* Save button row */}
+                            {/* Saved cards section */}
+                            <div className="account-section-card">
+                                <div className="account-section-header">
+                                    <h3>Saved Cards</h3>
+                                    <p>Your available payment methods</p>
+                                </div>
+
+                                {/* Grid of saved purple payment cards */}
+                                <div className="saved-account-card-list">
+                                    {savedCards.length === 0 ? (
+                                        <p className="empty-card-text">No saved cards yet.</p>
+                                    ) : (
+                                        savedCards.map((card) => (
+                                            <div key={card.id} className="saved-payment-card">
+                                                {/* Top row of saved card */}
+                                                <div className="saved-payment-card-top">
+                                                    <span className="payment-chip"></span>
+                                                    <span className="payment-brand">VISA</span>
+                                                </div>
+
+                                                {/* Card number */}
+                                                <div className="saved-payment-card-number">
+                                                    •••• •••• •••• {card.cardNumber.slice(-4)}
+                                                </div>
+
+                                                {/* Bottom row */}
+                                                <div className="saved-payment-card-bottom">
+                                                    <div>
+                                                        <small>Card Holder</small>
+                                                        <p>{card.cardName}</p>
+                                                    </div>
+
+                                                    <div>
+                                                        <small>Expires</small>
+                                                        <p>{card.expiryDate}</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Billing address */}
+                                                <div className="saved-payment-card-address">
+                                                    <small>Billing Address</small>
+                                                    <p>{card.billingAddress}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                            
+
+                            {/* Save button */}
                             <div className="account-actions-row">
                                 <button className="save-account-btn">Save Changes</button>
                             </div>
@@ -216,7 +268,7 @@ const AccountPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* Profile picture popup */}
+            {/* Profile popup */}
             {showPopup && (
                 <div className="profile-popup-overlay">
                     <div className="profile-popup">
@@ -236,8 +288,7 @@ const AccountPage: React.FC = () => {
                             {profileOptions.map((profile, index) => (
                                 <div
                                     key={index}
-                                    className={`profile-choice ${selectedProfile === profile ? "selected" : ""
-                                        }`}
+                                    className={`profile-choice ${selectedProfile === profile ? "selected" : ""}`}
                                     onClick={() => setSelectedProfile(profile)}
                                 >
                                     <img src={profile} alt={`Profile ${index}`} />
@@ -257,6 +308,5 @@ const AccountPage: React.FC = () => {
         </div>
     );
 };
-
 
 export default AccountPage;

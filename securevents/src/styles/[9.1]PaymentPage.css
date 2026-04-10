@@ -1,55 +1,158 @@
+/* Main spacing inside payment page */
 .payment-scroll {
     padding: 28px;
 }
 
+/* Two-column layout */
 .payment-page-layout {
     display: grid;
-    grid-template-columns: 0.8fr 1.2fr;
+    grid-template-columns: 0.85fr 1.15fr;
     gap: 28px;
+    align-items: start;
 }
 
+/* Shared card containers */
 .payment-summary-card,
 .payment-form-card {
     background: white;
     border-radius: 24px;
     padding: 28px;
     box-shadow: 0 10px 30px rgba(42, 20, 88, 0.1);
+    border: 1px solid rgba(192, 132, 252, 0.15);
 }
 
+    /* Section titles */
     .payment-summary-card h2,
-    .payment-form-card h2 {
+    .payment-form-card h2,
+    .payment-form-card h3 {
         margin-top: 0;
         color: #2a1458;
     }
 
+    /* Summary text */
     .payment-summary-card p {
         color: #5d4a7a;
         line-height: 1.8;
     }
 
+/* Saved cards section */
+.saved-cards-section {
+    margin-bottom: 22px;
+}
+
+/* Saved card list */
+.saved-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Each saved card option */
+.saved-card-option {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    cursor: pointer;
+}
+
+/* Saved card container */
+.saved-card-box {
+    flex: 1;
+    background: #faf7ff;
+    border: 2px solid #eadcff;
+    border-radius: 16px;
+    padding: 16px;
+    color: #4c2f77;
+}
+
+/* Action rows */
+.payment-action-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: 16px 0;
+}
+
+/* New card form wrapper */
+.new-card-form-box {
+    background: #fcfbff;
+    border: 1px solid #eee4ff;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+/* Main payment form */
 .payment-form {
     display: flex;
     flex-direction: column;
     gap: 18px;
 }
 
+/* Two-column field grid */
 .payment-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
 }
 
+/* Full-width payment field */
+.payment-field-full {
+    grid-column: 1 / -1;
+}
+
+/* Shared field block */
+.account-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    /* Labels */
+    .account-field label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #4c2f77;
+    }
+
+    /* Inputs */
+    .account-field input {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 2px solid #eee4ff;
+        background: #fcfbff;
+        font-size: 15px;
+        outline: none;
+        transition: 0.2s ease;
+        color: #2a1458;
+    }
+
+        /* Input focus */
+        .account-field input:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
+            background: white;
+        }
+
+/* Main action button */
 .confirm-payment-btn {
     background: linear-gradient(135deg, #8b5cf6, #c084fc);
     color: white;
     border: none;
     border-radius: 14px;
-    padding: 14px;
+    padding: 14px 18px;
     font-weight: 700;
     cursor: pointer;
     box-shadow: 0 6px 16px rgba(139, 92, 246, 0.28);
 }
 
+/* Secondary button */
+.secondary-btn {
+    background: #ede9fe;
+    color: #5b21b6;
+    box-shadow: none;
+}
+
+/* Responsive layout */
 @media (max-width: 900px) {
     .payment-page-layout {
         grid-template-columns: 1fr;
@@ -57,5 +160,9 @@
 
     .payment-form-grid {
         grid-template-columns: 1fr;
+    }
+
+    .payment-field-full {
+        grid-column: auto;
     }
 }

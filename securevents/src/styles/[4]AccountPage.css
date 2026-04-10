@@ -205,6 +205,7 @@
 .account-actions-row {
     display: flex;
     justify-content: flex-end;
+    margin-top: 18px; /* creates space from form above */
 }
 
 /* Shared action buttons */
@@ -348,7 +349,7 @@
     }
 
     .save-account-btn {
-        width: 100%;
+        width: 80%;
     }
 }
 .payment-form-box {
@@ -368,3 +369,107 @@
     .billing-summary p {
         margin: 8px 0;
     }
+/* Saved cards list on account page */
+.saved-account-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Individual saved card box */
+.saved-account-card {
+    background: #faf7ff;
+    border: 1px solid #eadcff;
+    border-radius: 18px;
+    padding: 18px;
+    color: #4c2f77;
+}
+
+/* Empty saved cards text */
+.empty-card-text {
+    color: #7c6b9e;
+    margin: 0;
+}
+
+/* Saved cards list layout */
+.saved-account-card-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+/* Purple saved payment card */
+.saved-payment-card {
+    background: linear-gradient(135deg, #5b2aa8, #b277ff);
+    border-radius: 22px;
+    padding: 22px;
+    color: white;
+    box-shadow: 0 12px 24px rgba(91, 42, 168, 0.28);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Top row of saved payment card */
+.saved-payment-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Saved card number */
+.saved-payment-card-number {
+    font-size: 22px;
+    letter-spacing: 2px;
+    font-weight: 600;
+}
+
+/* Bottom row of saved card */
+.saved-payment-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+    /* Small labels on saved card */
+    .saved-payment-card-bottom small,
+    .saved-payment-card-address small {
+        display: block;
+        font-size: 11px;
+        opacity: 0.8;
+        margin-bottom: 4 px;
+    }
+
+    /* Text inside saved card */
+    .saved-payment-card-bottom p,
+    .saved-payment-card-address p {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+/* Billing address section */
+.saved-payment-card-address {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 10px;
+}
+
+/* Empty state text */
+.empty-card-text {
+    color: #7c6b9e;
+    margin: 0;
+}
+
+/* Add card form wrapper */
+.account-section-card {
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(42, 20, 88, 0.1);
+    border: 1px solid rgba(192, 132, 252, 0.14);
+}
+
+/* Better placeholder color */
+.account-field input::placeholder {
+    color: #b19ad6;
+}
