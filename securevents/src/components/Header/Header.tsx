@@ -33,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({
   return (
     <div className="header">
       {/* LEFT: Logo */}
-      <div className="header-left" onClick={() => navigate("/Main")}>
+      <div className="header-left" onClick={() => navigate("/main")}>
         <img src={logo} alt="SecureEvents" className="header-logo" />
       </div>
 

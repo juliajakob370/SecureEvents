@@ -9,6 +9,7 @@ type Props = {
   price: string;
   image: string;
   dateTime: string;
+  status: string;
 };
 
 const MyEventCard: React.FC<Props> = ({
@@ -17,7 +18,8 @@ const MyEventCard: React.FC<Props> = ({
   location,
   price,
   image,
-  dateTime
+  dateTime,
+  status
 }) => {
   const navigate = useNavigate();
 
@@ -44,10 +46,16 @@ const MyEventCard: React.FC<Props> = ({
         <img src={image} alt={title} />
       </div>
 
-      {/* MIDDLE: CONTENT (same as before) */}
+      {/* MIDDLE: CONTENT  */}
       <div className="event-content">
 
-        <h3 className="event-title">{title}</h3>
+        <div className="event-title-row">
+            <h3 className="event-title">{title}</h3>
+
+            <span className={`event-status ${status}`}>
+                {status === "active" ? "Active" : "Past"}
+            </span>
+        </div>
 
         <div className="event-row">
           <span className="event-organizer">{organizer}</span>
