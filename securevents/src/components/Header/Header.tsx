@@ -8,9 +8,9 @@ import MenuDropdown from "../MenuDropdown/MenuDropdown";
 
 const menuItems = [
   { label: "My Tickets", icon: "bi-ticket-perforated", path: "/tickets" },
-  { label: "My Events", icon: "bi-calendar-event", path: "/events" },
+  { label: "My Events", icon: "bi-calendar-event", path: "/my-events" },
   { label: "Post Event", icon: "bi-plus-circle", path: "/post-event" },
-  { label: "Log Out", icon: "bi-box-arrow-right", path: "/" }
+  { label: "Log Out", icon: "bi-box-arrow-right", path: "/" },
 ];
 
 type HeaderProps = {
@@ -32,10 +32,9 @@ const Header: React.FC<HeaderProps> = ({
 
   return (
     <div className="header">
-
       {/* LEFT: Logo */}
       <div className="header-left" onClick={() => navigate("/About-dashboard")}>
-          <img src={logo} alt="SecureEvents" className="header-logo" />
+        <img src={logo} alt="SecureEvents" className="header-logo" />
       </div>
 
       {/* CENTER: Title or Search */}
@@ -47,7 +46,6 @@ const Header: React.FC<HeaderProps> = ({
 
       {/* RIGHT: Menu + Profile/Home */}
       <div className="header-right">
-
         {/* Menu icon */}
         <MenuDropdown items={menuItems} />
 
@@ -61,18 +59,12 @@ const Header: React.FC<HeaderProps> = ({
           />
         )}
 
-        
-
         {/* Home button */}
         {showHome && (
-          <div
-            className="header-home"
-            onClick={() => navigate("/main")}
-          >
+          <div className="header-home" onClick={() => navigate("/main")}>
             <i className="bi bi-house"></i>
           </div>
         )}
-
       </div>
     </div>
   );

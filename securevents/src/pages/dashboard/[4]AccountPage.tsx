@@ -40,7 +40,7 @@ const AccountPage: React.FC = () => {
     return (
         <div style={{ padding: "20px" }}>
             {/* Header */}
-            <Header centerType="title" title="My Account" showHome={true} />
+            <Header centerType="title" title="MY ACCOUNT" showHome={true} />
 
             {/* Main scroll container */}
             <div className="events-container">

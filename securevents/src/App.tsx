@@ -10,6 +10,7 @@ import MyTicketsPage from "./pages/dashboard/[5]MyTicketsPage";
 import AboutPage from "./pages/public/[0.1]AboutPage";
 import AboutDashboardPage from "./pages/dashboard/[11]AboutPage";
 import AccountPage from "./pages/dashboard/[4]AccountPage";
+import MyEventsPage from "./pages/dashboard/[7]MyEventsPage";
 
 
 
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/about-dashboard" element={<AboutDashboardPage />} />
                 <Route path="/account" element={<AccountPage />} />
+                <Route path="/my-events" element={<MyEventsPage />} />
             </Routes>
         </Router>
     );
