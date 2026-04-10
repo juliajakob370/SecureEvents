@@ -1,0 +1,61 @@
+.payment-scroll {
+    padding: 28px;
+}
+
+.payment-page-layout {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 28px;
+}
+
+.payment-summary-card,
+.payment-form-card {
+    background: white;
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(42, 20, 88, 0.1);
+}
+
+    .payment-summary-card h2,
+    .payment-form-card h2 {
+        margin-top: 0;
+        color: #2a1458;
+    }
+
+    .payment-summary-card p {
+        color: #5d4a7a;
+        line-height: 1.8;
+    }
+
+.payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.payment-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.confirm-payment-btn {
+    background: linear-gradient(135deg, #8b5cf6, #c084fc);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.28);
+}
+
+@media (max-width: 900px) {
+    .payment-page-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
