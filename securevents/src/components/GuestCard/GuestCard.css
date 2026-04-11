@@ -1,0 +1,105 @@
+.guest-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  background: white;
+  border-radius: 16px;
+  padding: 14px 18px;
+
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  cursor: default;
+}
+
+/* HOVER */
+.guest-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(138, 43, 226, 0.2);
+}
+
+/* CHECK BUTTON */
+.guest-check-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  font-size: 26px;
+  color: #8b5cf6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* TITLE */
+.guest-title {
+  font-weight: bold;
+  color: #2a1458;
+  font-size: 16px;
+  min-width: 180px;
+}
+
+/* NAME */
+.guest-name {
+  color: #555;
+  font-size: 14px;
+}
+
+/* DATE TIME */
+.guest-datetime {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 13px;
+  color: #8b5cf6;
+}
+
+/* ✅ CHECKED IN STATE */
+.guest-card.checked-in {
+  background: #8b5cf6;
+  color: white;
+}
+
+/* override text colors when checked */
+.guest-card.checked-in .guest-title {
+  color: white;
+}
+
+.guest-card.checked-in .guest-name {
+  color: #e0d4ff;
+}
+
+.guest-card.checked-in .guest-datetime {
+  color: #e0d4ff;
+}
+
+.guest-card.checked-in .guest-check-btn {
+  color: white;
+}
+
+/* NAME + EMAIL CONTAINER */
+.guest-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 14px;
+  color: #555;
+}
+
+/* EMAIL */
+.guest-email {
+  font-size: 13px;
+  color: #8b5cf6;
+  opacity: 0.85;
+}
+
+/* checked-in override */
+.guest-card.checked-in .guest-email {
+  color: #e0d4ff;
+}
