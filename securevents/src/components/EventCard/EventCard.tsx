@@ -65,7 +65,9 @@ const EventCard: React.FC<Props> = ({
 
                     <span className="event-datetime">
                         <i className="bi bi-calendar-event"></i>
-                        {date} • {time}
+                        {date}
+                        <i className="bi bi-clock"></i> 
+                        {time}
                     </span>
                 </div>
 
