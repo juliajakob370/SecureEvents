@@ -3,7 +3,6 @@ import { EventContext } from "../../context/EventContext";
 import { useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
-import "../../styles/[9]GetTicketsPage.css";
 import "../../styles/PostEventPage.css";
 import defaultImage from "../../assets/default-image.png";
 
@@ -88,13 +87,10 @@ const PostEventPage: React.FC = () => {
           <div className="post-event-layout">
 
             {/* LEFT */}
-            <div className="post-left">
-              <div className="ticket-event-card image-upload-box">
-                <img
-                  src={image || defaultImage}
-                  alt="Event"
-                  className="image-preview"
-                />
+           <div className="post-left-card">
+                <div className="image-container">
+                  <img src={image || defaultImage} alt="Event" />
+                </div>
 
                 <label className="upload-btn">
                   <i className="bi bi-upload"></i>
@@ -121,37 +117,34 @@ const PostEventPage: React.FC = () => {
                 </div>
 
                 <div className="price-section">
-                  <div className="price-label-row">
-                    <span className="price-label">
-                      <i className="bi bi-ticket-perforated"></i>
-                      Price Per Ticket
-                    </span>
+                  <span className="price-label">
+                    <i className="bi bi-ticket-perforated"></i>
+                    Price Per Ticket
+                  </span>
 
-                    <div className={`price-right-col ${isFree ? "disabled" : ""}`}>
-                      <label className="checkbox-row light">
-                        <input
-                          type="checkbox"
-                          checked={isFree}
-                          onChange={() => setIsFree(!isFree)}
-                        />
-                        Free Event?
-                      </label>
+                  <div className={`price-right-col ${isFree ? "disabled" : ""}`}>
+                    <label className="checkbox-row light">
+                      <input
+                        type="checkbox"
+                        checked={isFree}
+                        onChange={() => setIsFree(!isFree)}
+                      />
+                      Free Event?
+                    </label>
 
-                      <div className="price-input-clean">
-                        <span>$</span>
-                        <input
-                          type="number"
-                          placeholder={isFree ? "0.00" : "Enter ticket price"}
-                          disabled={isFree}
-                          value={price}
-                          onChange={(e) => setPrice(e.target.value)}
-                        />
-                      </div>
+                    <div className="price-input-clean">
+                      <span>$</span>
+                      <input
+                        type="number"
+                        placeholder={isFree ? "0.00" : "Enter ticket price"}
+                        disabled={isFree}
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                      />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
             {/* RIGHT */}
             <div className="post-right ticket-selection-card">

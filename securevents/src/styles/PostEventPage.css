@@ -1,139 +1,138 @@
+/* =========================
+   LAYOUT
+========================= */
+
 .post-event-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 28px;
 }
 
-/* LEFT SIDE */
-.post-left {
+/* =========================
+   LEFT PANEL CARD
+========================= */
+
+.post-left-card {
+  background: white;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(42, 20, 88, 0.1);
+
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-/* IMAGE BOX */
-.image-upload-box {
-  background: #faf7ff;
-  border-radius: 18px;
-  padding: 20px;
-  text-align: center;
-}
-
-.image-preview {
-  width: 80%;
-  height: 50%;
-  background: #eee4ff;
-  border-radius: 14px;
-  object-fit: cover;
-  margin-bottom: 12px;
-}
-
-/* RIGHT SIDE FORM */
-.post-right {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* TEXTAREA (for description) */
-.form-group textarea {
-  width: 100%;
-  padding: 16px 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(146, 121, 236, 0.4);
-  font-size: 16px;
-  resize: none;
-  min-height: 120px;
 }
 
 /* =========================
-   LEFT SIDE STYLING
+   IMAGE 
 ========================= */
 
-.section-title {
-  color: #2a1458;
-  font-weight: bold;
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.image-container {
+  width: 400px;
+  height: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #eee4ff;
+  align-self: center;
 }
 
-/* Styled upload button */
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* upload button */
 .upload-btn {
+  align-self: center;
+
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
 
   background: linear-gradient(135deg, #8b5cf6, #c084fc);
   color: white;
 
-  padding: 12px 16px;
+  padding: 10px 16px;
   border-radius: 12px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
 
-  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.28);
-  transition: all 0.2s;
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.25);
 }
 
-.upload-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
-}
+/* =========================
+   CAPACITY
+========================= */
 
-/* Bigger inputs on left */
-.post-left input[type="number"] {
-  width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: 2px solid #eee4ff;
-  font-size: 16px;
-  margin-top: 8px;
-}
-
-/* Checkbox styling */
-.checkbox-row {
+.capacity-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+}
+
+.capacity-row input {
+  width: 120px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid #eee4ff;
+}
+
+/* =========================
+   PRICE SECTION
+========================= */
+
+.price-section {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  margin: 10px 0;
-  color: #2a1458;
-  font-weight: 500;
+}
+
+/* checkbox */
+.checkbox-row.light {
+  color: #a78bfa;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .checkbox-row input {
   accent-color: #8b5cf6;
-  transform: scale(1.2);
 }
 
-/* Price input with $ */
-.price-input-wrapper {
+/* price input */
+.price-input {
   display: flex;
   align-items: center;
-  background: #faf7ff;
-  border: 2px solid #eee4ff;
-  border-radius: 12px;
-  padding: 0 12px;
+  gap: 6px;
 }
 
-.price-input-wrapper span {
+.price-input span {
   color: #8b5cf6;
   font-weight: bold;
-  margin-right: 6px;
 }
 
-.price-input-wrapper input {
+.price-input input {
   border: none;
+  border-bottom: 2px solid #eee4ff;
   outline: none;
-  flex: 1;
-  padding: 14px 0;
+  padding: 6px;
+  width: 120px;
   background: transparent;
 }
 
+.price-input input:focus {
+  border-bottom: 2px solid #8b5cf6;
+}
+
+.price-input input:disabled {
+  border-bottom: 2px dashed #ddd;
+  color: #aaa;
+}
+
 /* =========================
-   RIGHT SIDE FIXES
+   RIGHT SIDE
 ========================= */
 
 .post-form-inner {
@@ -187,30 +186,22 @@
   align-self: center;
   margin-top: 20px;
   max-width: 400px;
+  display: block;
+  margin: 20px auto 0;
 }
 
 .capacity-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  justify-content: flex-start;
+  gap: 16px;
   margin-top: 30px;
-}
-
-.capacity-label {
-  color: #45209b;
-  font-size: larger;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 40px;
-  margin-right: 40px;
+  padding: 0 40px;
 }
 
 .capacity-row input {
   width: 120px;
-  margin-right:40px;
+  margin-right: 0;
 }
 
 
@@ -222,15 +213,6 @@
   margin-top: 30px;
 }
 
-.price-label {
-  color: #45209b;
-  font-size: larger;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 40px;
-}
 
 /* Col on the right, under price label (holds checkbox + input) */
 .price-right-col {
@@ -265,6 +247,7 @@
   align-items: center;
   gap: 6px;
   padding-left: 4px;
+  margin-bottom: 10%;
 }
 
 .price-input-clean span {
@@ -298,4 +281,23 @@
   color: #c4b5fd;
 }
 
+.capacity-label,
+.price-label {
+  color: #45209b;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
+
+.price-label{
+  margin-left:40px;
+  margin-top: 10px;
+}
+
+.price-input-clean input {
+  width: 180px;
+  margin-top: 10px;
+}
