@@ -18,6 +18,7 @@ import PaymentPage from "./pages/dashboard/[9.1]PaymentPage";
 import TicketBookedConfirmation from "./pages/dashboard/[9.2]TicketBookedConfirmation";
 import PostEventPage from "./pages/dashboard/[6]PostEventPage";
 import GuestListPage from "./pages/dashboard/[7.2]MyEventGuestList";
+import EditEventPage from "./pages/dashboard/[7.1]EditMyEventDetails";
 
 
 
@@ -43,7 +44,8 @@ function App() {
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/ticket-booked" element={<TicketBookedConfirmation />} />
                     <Route path="/post-event" element={<PostEventPage />} />
-                    <Route path="/edit-event" element={<GuestListPage />} />
+                    <Route path="/guest-list" element={<GuestListPage />} />
+                    <Route path="/edit-event" element={<EditEventPage />} />
                 </Routes>
             </EventProvider>
         </Router>

@@ -11,8 +11,10 @@ type Props = {
   price: string;
   image: string;
   dateTime: string;
+  description: string; 
+  capacity: number;    
   status: string;
-  index: number; 
+  index: number;
 };
 
 const MyEventCard: React.FC<Props> = ({
@@ -22,6 +24,8 @@ const MyEventCard: React.FC<Props> = ({
   price,
   image,
   dateTime,
+  description,
+  capacity,
   status,
   index
 }) => {
@@ -109,9 +113,20 @@ const MyEventCard: React.FC<Props> = ({
         <button
           className="btn edit-btn"
           onClick={(e) => {
-            e.stopPropagation();
-            navigate("/edit-event");
-          }}
+          e.stopPropagation();
+            navigate("/edit-event", { state: { event: { 
+              title,
+              organizer,
+              location,
+              price,
+              image,
+              dateTime,
+              description, 
+              capacity,    
+              status,
+              index
+            } } });
+        }}
         >
           <i className="bi bi-pencil-fill"></i>
           Edit Event
