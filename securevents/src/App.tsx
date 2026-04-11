@@ -1,14 +1,13 @@
 // Imports: React router, icons, and page routes.
 import { EventProvider } from "./context/EventContext";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
-import LandingPage from './pages/public/[0]LandingPage';
-import LoginPage from './pages/public/[1]LoginPage';
-import LoginCodePage from './pages/public/[1.1]LoginCodePage';
-import SignupPage from './pages/public/[2]SignupPage';
+import LandingPage from "./pages/public/[0]LandingPage";
+import LoginPage from "./pages/public/[1]LoginPage";
+import LoginCodePage from "./pages/public/[1.1]LoginCodePage";
+import SignupPage from "./pages/public/[2]SignupPage";
 import SignupCodePage from "./pages/public/[2.1]SignupCodePage";
 import MainPage from "./pages/dashboard/[3]MainPage";
-import MyTicketsPage from "./pages/dashboard/[5]MyTicketsPage";
 import AboutPage from "./pages/public/[0.1]AboutPage";
 import AboutDashboardPage from "./pages/dashboard/[11]AboutPage";
 import AccountPage from "./pages/dashboard/[4]AccountPage";
@@ -20,36 +19,32 @@ import PostEventPage from "./pages/dashboard/[6]PostEventPage";
 import GuestListPage from "./pages/dashboard/[7.2]MyEventGuestList";
 import EditEventPage from "./pages/dashboard/[7.1]EditMyEventDetails";
 
-
-
-
 // Main app router.
 function App() {
-    return (
-        <Router>
-            <EventProvider>
-                <Routes>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/login-code" element={<LoginCodePage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/signup-code" element={<SignupCodePage />} />
-                    <Route path="/main" element={<MainPage />} />
-                    <Route path="/tickets" element={<MyTicketsPage />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/about-dashboard" element={<AboutDashboardPage />} />
-                    <Route path="/account" element={<AccountPage />} />
-                    <Route path="/my-events" element={<MyEventsPage />} />
-                    <Route path="/get-tickets" element={<GetTicketsPage />} />
-                    <Route path="/payment" element={<PaymentPage />} />
-                    <Route path="/ticket-booked" element={<TicketBookedConfirmation />} />
-                    <Route path="/post-event" element={<PostEventPage />} />
-                    <Route path="/guest-list" element={<GuestListPage />} />
-                    <Route path="/edit-event" element={<EditEventPage />} />
-                </Routes>
-            </EventProvider>
-        </Router>
-    );
+  return (
+    <Router>
+      <EventProvider>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/login-code" element={<LoginCodePage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signup-code" element={<SignupCodePage />} />
+          <Route path="/main" element={<MainPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/about-dashboard" element={<AboutDashboardPage />} />
+          <Route path="/account" element={<AccountPage />} />
+          <Route path="/my-events" element={<MyEventsPage />} />
+          <Route path="/get-tickets" element={<GetTicketsPage />} />
+          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/ticket-booked" element={<TicketBookedConfirmation />} />
+          <Route path="/post-event" element={<PostEventPage />} />
+          <Route path="/guest-list" element={<GuestListPage />} />
+          <Route path="/edit-event" element={<EditEventPage />} />
+        </Routes>
+      </EventProvider>
+    </Router>
+  );
 }
 
 export default App;

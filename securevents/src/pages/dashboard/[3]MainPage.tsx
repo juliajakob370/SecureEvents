@@ -24,7 +24,9 @@ const MainPage: React.FC = () => {
             <div className="events-container">
                 <div className="events-scroll">
                     {events.length === 0 ? (
-                        <p>No events available right now.</p>
+                        <div className="no-events">
+                            <p>No Events Available Right Now</p>
+                        </div>
                     ) : (
                         events.map((event, index) => (
                             <EventCard
