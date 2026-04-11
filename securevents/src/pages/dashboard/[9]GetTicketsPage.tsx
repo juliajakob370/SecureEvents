@@ -41,17 +41,20 @@ const GetTicketsPage: React.FC = () => {
                         <div className="tickets-page-layout">
                             {/* Event info card */}
                             <div className="ticket-event-card">
-                                <img
+
+                                <div className="ticket-event-content">
+                                    <img
                                     src={event.image}
                                     alt={event.title}
                                     className="ticket-event-image"
-                                />
+                                    />
 
                                 <div className="ticket-event-info">
                                     <h2>{event.title}</h2>
                                     <p><strong>Organizer:</strong> {event.organizer}</p>
                                     <p><strong>Location:</strong> {event.location}</p>
                                     <p><strong>Date:</strong> {event.dateTime}</p>
+                                    <p><strong>Description:</strong> {event.description}</p>
                                     <p><strong>Price per Ticket:</strong> {event.price}</p>
                                 </div>
                             </div>
@@ -93,8 +96,10 @@ const GetTicketsPage: React.FC = () => {
                                 </button>
                             </div>
                         </div>
+                    </div>
                     )}
                 </div>
+                
             </div>
         </div>
     );

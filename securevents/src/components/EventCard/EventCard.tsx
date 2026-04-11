@@ -11,6 +11,7 @@ type Props = {
     price: string;
     image: string;
     dateTime: string;
+    description: string;
 };
 
 // Reusable event card component.
@@ -20,7 +21,8 @@ const EventCard: React.FC<Props> = ({
     location,
     price,
     image,
-    dateTime
+    dateTime,
+    description
 }) => {
     const navigate = useNavigate();
 
@@ -31,7 +33,8 @@ const EventCard: React.FC<Props> = ({
         location,
         price,
         image,
-        dateTime
+        dateTime,
+        description
     };
 
     return (

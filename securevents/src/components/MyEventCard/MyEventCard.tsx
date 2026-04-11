@@ -1,6 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./MyEventCard.css";
+import { useContext } from "react";
+import { EventContext } from "../../context/EventContext";
 
 type Props = {
   title: string;
@@ -9,6 +11,10 @@ type Props = {
   price: string;
   image: string;
   dateTime: string;
+  description: string; 
+  capacity: number;    
+  status: string;
+  index: number;
 };
 
 const MyEventCard: React.FC<Props> = ({
@@ -17,20 +23,28 @@ const MyEventCard: React.FC<Props> = ({
   location,
   price,
   image,
-  dateTime
+  dateTime,
+  description,
+  capacity,
+  status,
+  index
 }) => {
   const navigate = useNavigate();
+  const { removeEvent } = useContext(EventContext);
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this event?\nAll tickets will be refunded."
-    );
+    const isPast = status === "past";
+
+    const confirmMessage = isPast
+      ? "Are you sure you want to delete this event?"
+      : "Refund all tickets and remove this event?";
+
+    const confirmDelete = window.confirm(confirmMessage);
 
     if (confirmDelete) {
-      console.log("Delete event logic here");
-      // call API here later
+      removeEvent(index);
     }
   };
 
@@ -44,10 +58,16 @@ const MyEventCard: React.FC<Props> = ({
         <img src={image} alt={title} />
       </div>
 
-      {/* MIDDLE: CONTENT (same as before) */}
+      {/* MIDDLE: CONTENT  */}
       <div className="event-content">
 
-        <h3 className="event-title">{title}</h3>
+        <div className="event-title-row">
+            <h3 className="event-title">{title}</h3>
+
+            <span className={`event-status ${status}`}>
+                {status === "active" ? "Active" : "Past"}
+            </span>
+        </div>
 
         <div className="event-row">
           <span className="event-organizer">{organizer}</span>
@@ -93,9 +113,20 @@ const MyEventCard: React.FC<Props> = ({
         <button
           className="btn edit-btn"
           onClick={(e) => {
-            e.stopPropagation();
-            navigate("/edit-event");
-          }}
+          e.stopPropagation();
+            navigate("/edit-event", { state: { event: { 
+              title,
+              organizer,
+              location,
+              price,
+              image,
+              dateTime,
+              description, 
+              capacity,    
+              status,
+              index
+            } } });
+        }}
         >
           <i className="bi bi-pencil-fill"></i>
           Edit Event
@@ -105,8 +136,8 @@ const MyEventCard: React.FC<Props> = ({
           className="btn delete-btn"
           onClick={handleDelete}
         >
-          <i className="bi bi-trash-fill"></i>
-          Delete
+          <i className={`bi ${status === "past" ? "bi-trash-fill" : "bi-cash-coin"}`}></i>
+          {status === "past" ? "Delete" : "Refund"}
         </button>
 
       </div>

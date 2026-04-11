@@ -29,11 +29,14 @@ const TicketBookedConfirmation: React.FC = () => {
                         <p>
                             Thank you for your purchase. Your booking has been successfully confirmed.
                         </p>
+                        <p>
+                            Tickets have been sent to the email associated with this account.
+                        </p>
 
                         <div className="confirmation-details">
                             <p><strong>Event:</strong> {event?.title || "Selected Event"}</p>
                             <p><strong>Organizer:</strong> {event?.organizer || "Organizer"}</p>
-                            <p><strong>Tickets:</strong> {quantity}</p>
+                            <p><strong>Tickets:</strong> {quantity}</p>                
                             <p><strong>Total Paid:</strong> ${Number(total).toFixed(2)}</p>
                         </div>
 
