@@ -27,10 +27,10 @@ const GuestCard: React.FC<Props> = ({ title, name, email, dateTime }) => {
       {/* EVENT TITLE */}
       <span className="guest-title">{title}</span>
 
-        <span className="guest-name">
-        {name}
-        <span className="guest-email">{email}</span>
-        </span>
+        <div className="guest-name-block">
+            <span className="guest-name">{name}</span>
+            <span className="guest-email">{email}</span>
+        </div>
 
       {/* DATE TIME */}
       <span className="guest-datetime">

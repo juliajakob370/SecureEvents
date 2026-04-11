@@ -82,24 +82,39 @@
   color: white;
 }
 
-/* NAME + EMAIL CONTAINER */
-.guest-name {
+/* NAME BLOCK */
+.guest-name-block {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 2px;
 
+  min-width: 180px;
+}
+
+/* NAME */
+.guest-name {
   font-size: 14px;
+  font-weight: 500;
   color: #555;
 }
 
 /* EMAIL */
 .guest-email {
-  font-size: 13px;
+  font-size: 12px;
   color: #8b5cf6;
   opacity: 0.85;
+
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-/* checked-in override */
-.guest-card.checked-in .guest-email {
+/* checked-in overrides */
+.guest-card.checked-in .guest-name {
   color: #e0d4ff;
+}
+
+.guest-card.checked-in .guest-email {
+  color: #d6c7ff;
 }
