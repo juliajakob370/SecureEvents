@@ -21,7 +21,7 @@
     border: 1px solid rgba(192, 132, 252, 0.15);
 }
 
-    /* Section titles */
+    /* Titles */
     .payment-summary-card h2,
     .payment-form-card h2,
     .payment-form-card h3 {
@@ -40,14 +40,12 @@
     margin-bottom: 22px;
 }
 
-/* Saved card list */
 .saved-card-list {
     display: flex;
     flex-direction: column;
     gap: 14px;
 }
 
-/* Each saved card option */
 .saved-card-option {
     display: flex;
     gap: 12px;
@@ -55,24 +53,23 @@
     cursor: pointer;
 }
 
-/* Saved card container */
 .saved-card-box {
     flex: 1;
-    background: #faf7ff;
-    border: 2px solid #eadcff;
-    border-radius: 16px;
+    background: linear-gradient(135deg, #5b2aa8, #b277ff);
+    border-radius: 18px;
     padding: 16px;
-    color: #4c2f77;
+    color: white;
+    box-shadow: 0 12px 24px rgba(91, 42, 168, 0.22);
 }
 
-/* Action rows */
+/* Action row */
 .payment-action-row {
     display: flex;
     justify-content: flex-end;
     margin: 16px 0;
 }
 
-/* New card form wrapper */
+/* New card form box */
 .new-card-form-box {
     background: #fcfbff;
     border: 1px solid #eee4ff;
@@ -88,19 +85,19 @@
     gap: 18px;
 }
 
-/* Two-column field grid */
+/* Two-column form grid */
 .payment-form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 18px;
 }
 
-/* Full-width payment field */
+/* Full-width field */
 .payment-field-full {
     grid-column: 1 / -1;
 }
 
-/* Shared field block */
+/* Field wrapper */
 .account-field {
     display: flex;
     flex-direction: column;
@@ -126,14 +123,14 @@
         color: #2a1458;
     }
 
-        /* Input focus */
+        /* Focus effect */
         .account-field input:focus {
             border-color: #8b5cf6;
             box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.12);
             background: white;
         }
 
-/* Main action button */
+/* Main button */
 .confirm-payment-btn {
     background: linear-gradient(135deg, #8b5cf6, #c084fc);
     color: white;
@@ -152,7 +149,7 @@
     box-shadow: none;
 }
 
-/* Responsive layout */
+/* Mobile layout */
 @media (max-width: 900px) {
     .payment-page-layout {
         grid-template-columns: 1fr;
@@ -165,4 +162,20 @@
     .payment-field-full {
         grid-column: auto;
     }
+}
+
+/* Validation error text for payment form */
+.form-error {
+    margin: 6px 0 0;
+    color: #c026d3;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Validation error text for account page */
+.form-error {
+    margin: 6px 0 0;
+    color: #c026d3;
+    font-size: 13px;
+    font-weight: 600;
 }

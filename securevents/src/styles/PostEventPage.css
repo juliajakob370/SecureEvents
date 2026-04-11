@@ -298,4 +298,11 @@
   color: #c4b5fd;
 }
 
+/* Validation error text for post event form */
+.form-error {
+    margin: 6px 0 0;
+    color: #c026d3;
+    font-size: 13px;
+    font-weight: 600;
+}
 

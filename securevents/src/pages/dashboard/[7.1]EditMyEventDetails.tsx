@@ -1,188 +1,184 @@
-import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+// Imports: React hooks, shared event context, navigation hooks, header, and styles.
+import React, { useContext, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { EventContext } from "../../context/EventContext";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
-import "../../styles/[9]GetTicketsPage.css";
 import "../../styles/PostEventPage.css";
-import defaultImage from "../../assets/default-image.png";
 
-const EditEventPage: React.FC = () => {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const { events, removeEvent, addEvent } = useContext(EventContext);
+// Edit Event page component.
+const EditMyEventDetails: React.FC = () => {
+    // Get selected event from router state.
+    const locationHook = useLocation();
+    const navigate = useNavigate();
+    const { removeEvent, addEvent } = useContext(EventContext);
 
-  const event = state?.event;
+    const event = locationHook.state?.event;
 
-  // FILL IN VALUES
-  const [title, setTitle] = useState(event?.title || "");
-  const [locationText, setLocationText] = useState(event?.location || "");
-  const [description, setDescription] = useState(event?.description || "");
-  const [capacity, setCapacity] = useState(event?.capacity || 50);
+    // Form state pre-filled from selected event.
+    const [title, setTitle] = useState(event?.title || "");
+    const [date, setDate] = useState(event?.date || "");
+    const [time, setTime] = useState(event?.time || "");
+    const [location, setLocation] = useState(event?.location || "");
+    const [description, setDescription] = useState(event?.description || "");
+    const [capacity, setCapacity] = useState(event?.capacity || 50);
+    const [price, setPrice] = useState(
+        event?.price === "Free" ? "" : event?.price?.replace("$", "") || ""
+    );
+    const [image, setImage] = useState(event?.image || "");
+    const [status, setStatus] = useState(event?.status || "active");
+    const [isFree, setIsFree] = useState(event?.price === "Free");
 
-  const [image, setImage] = useState<string | null>(event?.image || null);
+    // Save edited event.
+    const handleSave = () => {
+        if (!title || !date || !time || !location) {
+            alert("Please fill all required fields");
+            return;
+        }
 
-  // split date/time
-  const [date, setDate] = useState(event?.dateTime?.split(" • ")[0] || "");
-  const [time, setTime] = useState(event?.dateTime?.split(" • ")[1] || "");
+        const updatedEvent = {
+            title,
+            date,
+            time,
+            organizer: event?.organizer || "You",
+            location,
+            price: isFree ? "Free" : price ? `$${price}` : "$0",
+            image,
+            description,
+            capacity,
+            status
+        };
 
-  const [isFree, setIsFree] = useState(event?.price === "Free");
-  const [price, setPrice] = useState(
-    event?.price && event.price !== "Free" ? event.price.replace("$", "") : "",
-  );
+        removeEvent(event.index);
+        addEvent(updatedEvent);
 
-  // image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("Please upload an image file");
-      return;
-    }
-
-    setImage(URL.createObjectURL(file));
-  };
-
-  useEffect(() => {
-    if (isFree) setPrice("");
-  }, [isFree]);
-
-  const handleUpdate = () => {
-    if (!title || !date || !time || !locationText) {
-      alert("Please fill all required fields");
-      return;
-    }
-
-    const fullDateTime = new Date(`${date}T${time}`);
-
-    const updatedEvent = {
-      title,
-      organizer: "You",
-      location: locationText,
-      price: isFree ? "Free" : price ? `$${price}` : "$0",
-      image: image || defaultImage,
-      dateTime: `${date} • ${time}`,
-      description,
-      capacity,
-      status: fullDateTime < new Date() ? "past" : "active",
+        navigate("/main");
     };
 
-    // simple replace - delete and add new - later update idk??? im so tired
-    removeEvent(event.index);
-    addEvent(updatedEvent);
+    return (
+        <div style={{ padding: "20px" }}>
+            {/* Header */}
+            <Header centerType="title" title="EDIT EVENT" showHome={true} />
 
-    navigate("/main");
-  };
+            {/* Main layout */}
+            <div className="events-container">
+                <div className="events-scroll tickets-scroll">
+                    <div className="post-event-layout">
+                        {/* Left side preview */}
+                        <div className="post-left">
+                            <div className="ticket-event-card image-upload-box">
+                                <img
+                                    src={image}
+                                    alt="Event"
+                                    className="image-preview"
+                                />
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <Header centerType="title" title="EDIT EVENT" showProfile={true} />
+                                <div className="capacity-row">
+                                    <span className="capacity-label">
+                                        <i className="bi bi-people-fill"></i> Capacity
+                                    </span>
 
-      <div className="events-container">
-        <div className="events-scroll tickets-scroll">
-          <div className="post-event-layout">
-            {/* LEFT */}
-            <div className="post-left">
-              <div className="ticket-event-card image-upload-box">
-                <img src={image || defaultImage} className="image-preview" />
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        value={capacity}
+                                        onChange={(e) => setCapacity(Number(e.target.value))}
+                                    />
+                                </div>
 
-                <label className="upload-btn">
-                  Choose Image
-                  <input type="file" hidden onChange={handleImageUpload} />
-                </label>
+                                <div className="price-section">
+                                    <div className="price-label-row">
+                                        <span className="price-label">
+                                            <i className="bi bi-ticket-perforated"></i>
+                                            Price Per Ticket
+                                        </span>
 
-                <div className="capacity-row">
-                  <span className="capacity-label">Capacity</span>
-                  <input
-                    type="number"
-                    value={capacity}
-                    onChange={(e) => setCapacity(Number(e.target.value))}
-                  />
-                </div>
+                                        <div className={`price-right-col ${isFree ? "disabled" : ""}`}>
+                                            <label className="checkbox-row light">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isFree}
+                                                    onChange={() => setIsFree(!isFree)}
+                                                />
+                                                Free Event?
+                                            </label>
 
-                <div className="price-label-row">
-                  <span className="price-label">Price Per Ticket</span>
+                                            <div className="price-input-clean">
+                                                <span>$</span>
+                                                <input
+                                                    type="number"
+                                                    placeholder={isFree ? "0.00" : "Enter ticket price"}
+                                                    disabled={isFree}
+                                                    value={price}
+                                                    onChange={(e) => setPrice(e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                  <div className="price-right-col">
-                    <label className="checkbox-row light">
-                      <input
-                        type="checkbox"
-                        checked={isFree}
-                        onChange={() => setIsFree(!isFree)}
-                      />
-                      Free Event?
-                    </label>
+                        {/* Right side form */}
+                        <div className="post-right ticket-selection-card">
+                            <div className="post-form-inner">
+                                <div className="form-group">
+                                    <input
+                                        type="text"
+                                        placeholder=" "
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                    />
+                                    <label>Event Title</label>
+                                </div>
 
-                    <div className="price-input-clean">
-                      <span>$</span>
-                      <input
-                        type="number"
-                        disabled={isFree}
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
-                      />
+                                <div className="form-group">
+                                    <input
+                                        type="date"
+                                        value={date}
+                                        onChange={(e) => setDate(e.target.value)}
+                                    />
+                                    <label>Date</label>
+                                </div>
+
+                                <div className="form-group">
+                                    <input
+                                        type="time"
+                                        value={time}
+                                        onChange={(e) => setTime(e.target.value)}
+                                    />
+                                    <label>Time</label>
+                                </div>
+
+                                <div className="form-group">
+                                    <input
+                                        type="text"
+                                        placeholder=" "
+                                        value={location}
+                                        onChange={(e) => setLocation(e.target.value)}
+                                    />
+                                    <label>Location</label>
+                                </div>
+
+                                <div className="description-group">
+                                    <label>Description</label>
+                                    <textarea
+                                        placeholder="Tell people about your event..."
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+
+                            <button className="post-event-btn" onClick={handleSave}>
+                                Save Changes
+                            </button>
+                        </div>
                     </div>
-                  </div>
                 </div>
-              </div>
             </div>
-
-            {/* RIGHT */}
-            <div className="post-right ticket-selection-card">
-              <div className="post-form-inner">
-                <div className="form-group">
-                  <input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                  <label>Event Title</label>
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
-                  <label>Date</label>
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="time"
-                    value={time}
-                    onChange={(e) => setTime(e.target.value)}
-                  />
-                  <label>Time</label>
-                </div>
-
-                <div className="form-group">
-                  <input
-                    value={locationText}
-                    onChange={(e) => setLocationText(e.target.value)}
-                  />
-                  <label>Location</label>
-                </div>
-
-                <div className="description-group">
-                  <label>Description</label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <button className="post-event-btn" onClick={handleUpdate}>
-                Save Changes
-              </button>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
-export default EditEventPage;
+export default EditMyEventDetails;

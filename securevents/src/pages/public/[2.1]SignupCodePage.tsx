@@ -1,114 +1,137 @@
-//[2.1]SignupCodePage.tsx
+// Imports: React state, routing tools, shared styles, and logo.
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../../styles/SecurEventsStyle.css";
 import "../../styles/Login&SignUp.css";
 import logo from "../../assets/SecureEventLogo.png";
 
+// Signup code page component.
 const SignupCodePage: React.FC = () => {
-  const [formData, setFormData] = useState({ code: "" });
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
+    // Form state.
+    const [formData, setFormData] = useState({ code: "" });
+    const [loading, setLoading] = useState(false);
 
-  const firstName = location.state?.firstName || "";
-  const email = location.state?.email || "";
+    // Validation error state.
+    const [error, setError] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    // TODO: Verify code with backend
-    setTimeout(() => {
-      setLoading(false);
-      console.log("Signup code submitted:", formData.code);
-      navigate("/main");
-    }, 1500);
-  };
+    const firstName = location.state?.firstName || "";
+    const email = location.state?.email || "";
 
-  return (
-    <div className="global-page">
-      <div className="global-container auth-container">
-        <header className="global-header"></header>
+    // Update code input.
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value.replace(/\D/g, "")
+        });
+        setError("");
+    };
 
-        <div
-          className="global-content auth-form"
-          style={{ gridTemplateColumns: "1fr" }}
-        >
-          <div className="global-content-box">
-            <div className="login-signup-white-form-card">
-              {/* Logo */}
-              <div className="login-signup-logo-wrapper">
-                <img src={logo} alt="SecureEvents" className="global-logo" />
-              </div>
+    // Validate code format.
+    const validateForm = () => {
+        if (!/^\d{6}$/.test(formData.code)) {
+            setError("Code must be exactly 6 digits.");
+            return false;
+        }
 
-              {/* Title */}
-              <h2 className="login-title">
-                Welcome {firstName}, check your email!
-              </h2>
+        return true;
+    };
 
-              {/* Email text */}
-              <p className="code-sent-text">Verification code sent to</p>
-              <p className="email-text">
-                <span>{email}</span>
-              </p>
+    // Submit verification code.
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
 
-              {/* Form */}
-              <form onSubmit={handleSubmit} className="login-form">
-                <div className="form-group">
-                  <input
-                    id="signup-code"
-                    type="text"
-                    name="code"
-                    value={formData.code}
-                    onChange={handleChange}
-                    placeholder=" "
-                    required
-                  />
-                  <label htmlFor="signup-code">Enter Code</label>
-                </div>
+        if (!validateForm()) return;
 
-                {/* Buttons */}
-                <div className="button-row">
-                  <button
-                    type="button"
-                    className="resend-code-btn"
-                    onClick={() => {
-                      console.log("Resend signup code");
-                    }}
-                  >
-                    Resend Code
-                  </button>
+        setLoading(true);
 
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="submit-code-btn"
-                  >
-                    {loading ? "Verifying..." : "Submit"}
-                  </button>
-                </div>
-              </form>
+        setTimeout(() => {
+            setLoading(false);
+            console.log("Signup code submitted:", formData.code);
+            navigate("/main");
+        }, 1500);
+    };
 
-              {/* Back button */}
-              <div className="back-button-container">
-                <button
-                  type="button"
-                  className="back-btn"
-                  onClick={() => navigate("/signup")}
+    return (
+        <div className="global-page">
+            <div className="global-container auth-container">
+                <header className="global-header"></header>
+
+                <div
+                    className="global-content auth-form"
+                    style={{ gridTemplateColumns: "1fr" }}
                 >
-                  ← Back
-                </button>
-              </div>
+                    <div className="global-content-box">
+                        <div className="login-signup-white-form-card">
+                            <div className="login-signup-logo-wrapper">
+                                <img src={logo} alt="SecureEvents" className="global-logo" />
+                            </div>
+
+                            <h2 className="login-title">
+                                Welcome {firstName}, check your email!
+                            </h2>
+
+                            <p className="code-sent-text">Verification code sent to</p>
+                            <p className="email-text">
+                                <span>{email}</span>
+                            </p>
+
+                            <form onSubmit={handleSubmit} className="login-form">
+                                <div className="form-group">
+                                    <input
+                                        id="signup-code"
+                                        type="text"
+                                        name="code"
+                                        value={formData.code}
+                                        onChange={handleChange}
+                                        placeholder=" "
+                                        inputMode="numeric"
+                                        maxLength={6}
+                                        required
+                                    />
+                                    <label htmlFor="signup-code">Enter Code</label>
+                                </div>
+
+                                {error && <p className="form-error">{error}</p>}
+
+                                <div className="button-row">
+                                    <button
+                                        type="button"
+                                        className="resend-code-btn"
+                                        onClick={() => {
+                                            console.log("Resend signup code");
+                                        }}
+                                    >
+                                        Resend Code
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="submit-code-btn"
+                                    >
+                                        {loading ? "Verifying..." : "Submit"}
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div className="back-button-container">
+                                <button
+                                    type="button"
+                                    className="back-btn"
+                                    onClick={() => navigate("/signup")}
+                                >
+                                    ← Back
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default SignupCodePage;

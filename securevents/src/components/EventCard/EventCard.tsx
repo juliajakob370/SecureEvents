@@ -3,15 +3,18 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./EventCard.css";
 
-// Props: event information passed from MainPage.
+// Props for a single event card.
 type Props = {
     title: string;
     organizer: string;
     location: string;
     price: string;
     image: string;
-    dateTime: string;
+    date: string;
+    time: string;
     description: string;
+    status: string;
+    capacity: number;
 };
 
 // Reusable event card component.
@@ -21,20 +24,26 @@ const EventCard: React.FC<Props> = ({
     location,
     price,
     image,
-    dateTime,
-    description
+    date,
+    time,
+    description,
+    status,
+    capacity
 }) => {
     const navigate = useNavigate();
 
-    // Selected event object sent to the next pages.
+    // Selected event object passed to ticket flow.
     const eventData = {
         title,
         organizer,
         location,
         price,
         image,
-        dateTime,
-        description
+        date,
+        time,
+        description,
+        status,
+        capacity
     };
 
     return (
@@ -56,7 +65,7 @@ const EventCard: React.FC<Props> = ({
 
                     <span className="event-datetime">
                         <i className="bi bi-calendar-event"></i>
-                        {dateTime}
+                        {date} • {time}
                     </span>
                 </div>
 

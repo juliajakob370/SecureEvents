@@ -17,7 +17,7 @@ import profile7 from "../../assets/profilePics/profile7.png";
 type SavedCard = {
     id: number;
     cardName: string;
-    cardNumber: string;
+    cardLast4: string;
     expiryDate: string;
     billingAddress: string;
 };
@@ -52,6 +52,9 @@ const AccountPage: React.FC = () => {
     // Saved cards state.
     const [savedCards, setSavedCards] = useState<SavedCard[]>([]);
 
+    // Validation errors.
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
     // Load saved cards on page open.
     useEffect(() => {
         const storedCards = localStorage.getItem("secureEventsCards");
@@ -60,16 +63,50 @@ const AccountPage: React.FC = () => {
         }
     }, []);
 
+    // Validate add card form.
+    const validateCardForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        const trimmedName = cardName.trim();
+        const digitsOnly = cardNumber.replace(/\D/g, "");
+        const trimmedAddress = billingAddress.trim();
+
+        if (!/^[A-Za-z\s'-]{2,50}$/.test(trimmedName)) {
+            newErrors.cardName = "Name must be 2 to 50 letters.";
+        }
+
+        if (!/^\d{16}$/.test(digitsOnly)) {
+            newErrors.cardNumber = "Card number must be exactly 16 digits.";
+        }
+
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
+            newErrors.expiryDate = "Expiry must be in MM/YY format.";
+        }
+
+        if (!/^\d{3,4}$/.test(cvv)) {
+            newErrors.cvv = "CVV must be 3 or 4 digits.";
+        }
+
+        if (!trimmedAddress || trimmedAddress.length > 150) {
+            newErrors.billingAddress = "Billing address is required.";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     // Save a new card to localStorage.
     const handleAddCard = () => {
-        if (!cardName || !cardNumber || !expiryDate || !billingAddress) return;
+        if (!validateCardForm()) return;
+
+        const digitsOnly = cardNumber.replace(/\D/g, "");
 
         const newCard: SavedCard = {
             id: Date.now(),
-            cardName,
-            cardNumber,
+            cardName: cardName.trim(),
+            cardLast4: digitsOnly.slice(-4),
             expiryDate,
-            billingAddress
+            billingAddress: billingAddress.trim()
         };
 
         const updatedCards = [...savedCards, newCard];
@@ -81,6 +118,7 @@ const AccountPage: React.FC = () => {
         setExpiryDate("");
         setCvv("");
         setBillingAddress("");
+        setErrors({});
     };
 
     return (
@@ -131,6 +169,7 @@ const AccountPage: React.FC = () => {
                                         <label>Full Name</label>
                                         <input
                                             type="text"
+                                            maxLength={50}
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                         />
@@ -140,6 +179,7 @@ const AccountPage: React.FC = () => {
                                         <label>Email</label>
                                         <input
                                             type="email"
+                                            maxLength={100}
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
                                         />
@@ -159,46 +199,58 @@ const AccountPage: React.FC = () => {
                                         <label>Name on Card</label>
                                         <input
                                             type="text"
+                                            maxLength={50}
                                             value={cardName}
                                             onChange={(e) => setCardName(e.target.value)}
                                         />
+                                        {errors.cardName && <p className="form-error">{errors.cardName}</p>}
                                     </div>
 
                                     <div className="account-field">
                                         <label>Card Number</label>
                                         <input
                                             type="text"
+                                            inputMode="numeric"
+                                            maxLength={19}
                                             value={cardNumber}
-                                            onChange={(e) => setCardNumber(e.target.value)}
+                                            onChange={(e) => setCardNumber(e.target.value.replace(/[^\d\s]/g, ""))}
                                         />
+                                        {errors.cardNumber && <p className="form-error">{errors.cardNumber}</p>}
                                     </div>
 
                                     <div className="account-field">
                                         <label>Expiry Date</label>
                                         <input
                                             type="text"
+                                            maxLength={5}
                                             value={expiryDate}
                                             onChange={(e) => setExpiryDate(e.target.value)}
                                             placeholder="MM/YY"
                                         />
+                                        {errors.expiryDate && <p className="form-error">{errors.expiryDate}</p>}
                                     </div>
 
                                     <div className="account-field">
                                         <label>CVV</label>
                                         <input
                                             type="password"
+                                            inputMode="numeric"
+                                            maxLength={4}
                                             value={cvv}
-                                            onChange={(e) => setCvv(e.target.value)}
+                                            onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
                                         />
+                                        {errors.cvv && <p className="form-error">{errors.cvv}</p>}
                                     </div>
 
                                     <div className="account-field account-field-full">
                                         <label>Billing Address</label>
                                         <input
                                             type="text"
+                                            maxLength={150}
                                             value={billingAddress}
                                             onChange={(e) => setBillingAddress(e.target.value)}
                                         />
+                                        {errors.billingAddress && <p className="form-error">{errors.billingAddress}</p>}
                                     </div>
                                 </div>
 
@@ -216,25 +268,21 @@ const AccountPage: React.FC = () => {
                                     <p>Your available payment methods</p>
                                 </div>
 
-                                {/* Grid of saved purple payment cards */}
                                 <div className="saved-account-card-list">
                                     {savedCards.length === 0 ? (
                                         <p className="empty-card-text">No saved cards yet.</p>
                                     ) : (
                                         savedCards.map((card) => (
                                             <div key={card.id} className="saved-payment-card">
-                                                {/* Top row of saved card */}
                                                 <div className="saved-payment-card-top">
                                                     <span className="payment-chip"></span>
                                                     <span className="payment-brand">VISA</span>
                                                 </div>
 
-                                                {/* Card number */}
                                                 <div className="saved-payment-card-number">
-                                                    •••• •••• •••• {card.cardNumber.slice(-4)}
+                                                    •••• •••• •••• {card.cardLast4}
                                                 </div>
 
-                                                {/* Bottom row */}
                                                 <div className="saved-payment-card-bottom">
                                                     <div>
                                                         <small>Card Holder</small>
@@ -247,7 +295,6 @@ const AccountPage: React.FC = () => {
                                                     </div>
                                                 </div>
 
-                                                {/* Billing address */}
                                                 <div className="saved-payment-card-address">
                                                     <small>Billing Address</small>
                                                     <p>{card.billingAddress}</p>
@@ -256,12 +303,6 @@ const AccountPage: React.FC = () => {
                                         ))
                                     )}
                                 </div>
-                            </div>
-                            
-
-                            {/* Save button */}
-                            <div className="account-actions-row">
-                                <button className="save-account-btn">Save Changes</button>
                             </div>
                         </div>
                     </div>

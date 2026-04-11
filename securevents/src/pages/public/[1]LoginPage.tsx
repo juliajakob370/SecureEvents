@@ -1,88 +1,120 @@
-//[1]LoginPage.tsx
+// Imports: React state, routing tools, shared styles, and logo.
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../../styles/SecurEventsStyle.css";
 import "../../styles/Login&SignUp.css";
 import logo from "../../assets/SecureEventLogo.png";
 
+// Login page component.
 const LoginPage: React.FC = () => {
-  const [formData, setFormData] = useState({ email: ""});
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+    // Form state.
+    const [formData, setFormData] = useState({ email: "" });
+    const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    // Validation error state.
+    const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    // TODO: Auth API - send code to email
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/login-code", { state: { email: formData.email } });
-    }, 1500);
-  };
+    const navigate = useNavigate();
 
-  return (
-    <div className="global-page">
-      <div className="global-container auth-container">
-        <header className="global-header"></header>
-        <div
-          className="global-content auth-form"
-          style={{ gridTemplateColumns: "1fr" }}
-        >
-          <div className="global-content-box">
-            <div className="login-signup-white-form-card">
-              
-              {/* Logo - Top Left */}
-              <div className="login-signup-logo-wrapper">
-                <img src={logo} alt="SecureEvents" className="global-logo" />
-              </div>
+    // Update input state.
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setError("");
+    };
 
-              {/* LOG IN Title - Centered */}
-              <h2 className="login-title">Welcome back! What's your email?</h2>
+    // Validate email format.
+    const validateForm = () => {
+        const trimmedEmail = formData.email.trim();
 
-              {/* Form with Send Code button */}
-              <form onSubmit={handleSubmit} className="login-form">
-                <div className="form-group">
-                  <input
-                    id="email"
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder=""
-                    required
-                  />
-                  <label htmlFor="email">Email</label>
-                </div>
+        if (!trimmedEmail) {
+            setError("Email is required.");
+            return false;
+        }
 
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="send-code-btn"
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+            setError("Enter a valid email address.");
+            return false;
+        }
+
+        if (trimmedEmail.length > 100) {
+            setError("Email is too long.");
+            return false;
+        }
+
+        return true;
+    };
+
+    // Submit login request.
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        setLoading(true);
+
+        setTimeout(() => {
+            setLoading(false);
+            navigate("/login-code", { state: { email: formData.email.trim() } });
+        }, 1500);
+    };
+
+    return (
+        <div className="global-page">
+            <div className="global-container auth-container">
+                <header className="global-header"></header>
+
+                <div
+                    className="global-content auth-form"
+                    style={{ gridTemplateColumns: "1fr" }}
                 >
-                  {loading ? "Sending Code..." : "Send Code"}
-                </button>
-              </form>
+                    <div className="global-content-box">
+                        <div className="login-signup-white-form-card">
+                            <div className="login-signup-logo-wrapper">
+                                <img src={logo} alt="SecureEvents" className="global-logo" />
+                            </div>
 
-            </div>
+                            <h2 className="login-title">Welcome back! What's your email?</h2>
 
-            {/* Don't have account? Link */}
-            <div className="auth-footer">
-              <p className="auth-footer-text">
-                Don't have an account?{" "}
-                <Link to="/signup" className="signup-link-button">
-                  Sign up here!
-                </Link>
-              </p>
+                            <form onSubmit={handleSubmit} className="login-form">
+                                <div className="form-group">
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        placeholder=""
+                                        maxLength={100}
+                                        required
+                                    />
+                                    <label htmlFor="email">Email</label>
+                                </div>
+
+                                {error && <p className="form-error">{error}</p>}
+
+                                <button
+                                    type="submit"
+                                    disabled={loading}
+                                    className="send-code-btn"
+                                >
+                                    {loading ? "Sending Code..." : "Send Code"}
+                                </button>
+                            </form>
+                        </div>
+
+                        <div className="auth-footer">
+                            <p className="auth-footer-text">
+                                Don't have an account?{" "}
+                                <Link to="/signup" className="signup-link-button">
+                                    Sign up here!
+                                </Link>
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default LoginPage;
