@@ -41,6 +41,30 @@ const GetTicketsPage: React.FC = () => {
     // Calculate total price.
     const total = quantity * priceNumber;
 
+    // Handle quantity change with safe limits.
+    const handleQuantityChange = (value: string) => {
+        if (!event) return;
+
+        const parsed = Number(value);
+
+        if (Number.isNaN(parsed)) {
+            setQuantity(1);
+            return;
+        }
+
+        if (parsed < 1) {
+            setQuantity(1);
+            return;
+        }
+
+        if (parsed > event.capacity) {
+            setQuantity(event.capacity);
+            return;
+        }
+
+        setQuantity(parsed);
+    };
+
     return (
         <div style={{ padding: "20px" }}>
             {/* Header */}
@@ -88,7 +112,7 @@ const GetTicketsPage: React.FC = () => {
                                         min="1"
                                         max={event.capacity > 0 ? event.capacity : 1}
                                         value={quantity}
-                                        onChange={(e) => setQuantity(Number(e.target.value))}
+                                        onChange={(e) => handleQuantityChange(e.target.value)}
                                     />
                                 </div>
 
