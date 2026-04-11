@@ -18,13 +18,15 @@ import TicketBookedConfirmation from "./pages/dashboard/[9.2]TicketBookedConfirm
 import PostEventPage from "./pages/dashboard/[6]PostEventPage";
 import GuestListPage from "./pages/dashboard/[7.2]MyEventGuestList";
 import EditEventPage from "./pages/dashboard/[7.1]EditMyEventDetails";
+import { AuthProvider } from "./context/AuthContext";
 
 // Main app router.
 function App() {
   return (
-    <Router>
-      <EventProvider>
-        <Routes>
+      <Router>
+          <AuthProvider>
+              <EventProvider>
+                  <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/login-code" element={<LoginCodePage />} />
@@ -41,9 +43,10 @@ function App() {
           <Route path="/post-event" element={<PostEventPage />} />
           <Route path="/guest-list" element={<GuestListPage />} />
           <Route path="/edit-event" element={<EditEventPage />} />
-        </Routes>
-      </EventProvider>
-    </Router>
+                  </Routes>
+              </EventProvider>
+          </AuthProvider>
+      </Router>
   );
 }
 
