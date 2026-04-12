@@ -5,9 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
     options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        // OWASP A05 FIXED: explicit origin allowlist avoids cross-domain misconfiguration.
+        policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -37,8 +40,11 @@ var app = builder.Build();
 app.Use(async (context, next) =>
 {
     // OWASP A05 FIXED: Security headers reduce browser-side attack surface and insecure defaults.
+    // Includes anti-clickjacking and CSP protections.
     context.Response.Headers.TryAdd("X-Content-Type-Options", "nosniff");
     context.Response.Headers.TryAdd("X-Frame-Options", "DENY");
+    context.Response.Headers.TryAdd("Cross-Origin-Opener-Policy", "same-origin");
+    context.Response.Headers.TryAdd("Cross-Origin-Resource-Policy", "same-site");
     context.Response.Headers.TryAdd("Referrer-Policy", "no-referrer");
     context.Response.Headers.TryAdd("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
 

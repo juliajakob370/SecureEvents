@@ -23,7 +23,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        // OWASP A05 FIXED: restrict service CORS to trusted gateway/frontend origins.
+        policy.WithOrigins("http://localhost:3000", "http://localhost:5000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
