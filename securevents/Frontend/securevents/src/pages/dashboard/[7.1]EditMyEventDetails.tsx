@@ -6,6 +6,7 @@ import { AuthContext } from "../../context/AuthContext";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
 import "../../styles/PostEventPage.css";
+import { uploadEventImage } from "../../api/eventApi";
 
 // Edit Event page component.
 const EditMyEventDetails: React.FC = () => {
@@ -27,7 +28,9 @@ const EditMyEventDetails: React.FC = () => {
     const [price, setPrice] = useState(
         event?.price === "Free" ? "" : event?.price?.replace("$", "") || ""
     );
-    const [image] = useState(event?.image || "");
+    const [image, setImage] = useState(event?.image || "");
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [uploadingImage, setUploadingImage] = useState(false);
     const [status] = useState(event?.status || "active");
     const [error, setError] = useState("");
     const [isFree, setIsFree] = useState(event?.price === "Free");
@@ -35,6 +38,11 @@ const EditMyEventDetails: React.FC = () => {
     // Save edited event.
     const handleSave = async () => {
         setError("");
+
+        if (uploadingImage) {
+            setError("Image is still uploading. Please wait.");
+            return;
+        }
 
         if (!title || !date || !time || !location) {
             setError("Please fill all required fields");
@@ -70,6 +78,54 @@ const EditMyEventDetails: React.FC = () => {
         navigate("/main");
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+        const maxSize = 2 * 1024 * 1024;
+
+        if (!allowedTypes.includes(file.type)) {
+            setError("Only JPG, PNG, and WEBP images are allowed.");
+            return;
+        }
+
+        if (file.size > maxSize) {
+            setError("Image must be smaller than 2MB.");
+            return;
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        setImagePreview((prev) => {
+            if (prev && prev.startsWith("blob:")) {
+                URL.revokeObjectURL(prev);
+            }
+            return previewUrl;
+        });
+        setUploadingImage(true);
+        try {
+            const uploaded = await uploadEventImage(file);
+            if (!uploaded.imageUrl) {
+                throw new Error("Upload failed.");
+            }
+
+            setImage(uploaded.imageUrl);
+            setError("");
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to upload image.");
+        } finally {
+            setUploadingImage(false);
+        }
+    };
+
+    React.useEffect(() => {
+        return () => {
+            if (imagePreview && imagePreview.startsWith("blob:")) {
+                URL.revokeObjectURL(imagePreview);
+            }
+        };
+    }, [imagePreview]);
+
     return (
         <div style={{ padding: "20px" }}>
             {/* Header */}
@@ -83,10 +139,20 @@ const EditMyEventDetails: React.FC = () => {
                         <div className="post-left">
                             <div className="ticket-event-card image-upload-box">
                                 <img
-                                    src={image}
+                                    src={imagePreview || image}
                                     alt="Event"
                                     className="image-preview"
                                 />
+
+                                <label className="upload-btn" style={{ marginTop: "12px" }}>
+                                    Choose Image
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageUpload}
+                                        hidden
+                                    />
+                                </label>
 
                                 <div className="capacity-row">
                                     <span className="capacity-label">
@@ -186,7 +252,7 @@ const EditMyEventDetails: React.FC = () => {
                             </div>
 
                             <button className="post-event-btn" onClick={handleSave}>
-                                Save Changes
+                                {uploadingImage ? "Uploading image..." : "Save Changes"}
                             </button>
                             {error && <p className="form-error">{error}</p>}
                         </div>

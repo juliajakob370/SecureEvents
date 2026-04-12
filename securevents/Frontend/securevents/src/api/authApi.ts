@@ -1,7 +1,5 @@
 // Auth API functions for login, signup, verification, and current user.
 const BASE_URL = "http://localhost:5000/api/users";
-const TOKEN_KEY = "securevents_token";
-const REFRESH_TOKEN_KEY = "securevents_refresh_token";
 
 async function buildError(response: Response, fallback: string) {
     try {
@@ -16,39 +14,16 @@ async function buildError(response: Response, fallback: string) {
 }
 
 async function tryRefreshToken() {
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-    if (!refreshToken) {
-        return false;
-    }
-
     const response = await fetch(`${BASE_URL}/refresh-token`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ refreshToken })
+        credentials: "include",
+        body: JSON.stringify({})
     });
 
-    if (!response.ok) {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
-        return false;
-    }
-
-    const data = await response.json();
-    if (data?.token) {
-        localStorage.setItem(TOKEN_KEY, data.token);
-    }
-    if (data?.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
-    }
-
-    return true;
-}
-
-function getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem(TOKEN_KEY);
-    return token ? { Authorization: `Bearer ${token}` } : {};
+    return response.ok;
 }
 
 // Update logged-in user profile.
@@ -61,9 +36,9 @@ export async function updateCurrentUser(
 ) {
     const response = await fetch(`${BASE_URL}/me`, {
         method: "PUT",
+        credentials: "include",
         headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders()
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({ firstName, lastName, email, oldEmailCode, newEmailCode })
     });
@@ -78,9 +53,9 @@ export async function updateCurrentUser(
 export async function requestEmailChangeCodes(newEmail: string) {
     const response = await fetch(`${BASE_URL}/email-change/request-codes`, {
         method: "POST",
+        credentials: "include",
         headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders()
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({ newEmail })
     });
@@ -96,9 +71,7 @@ export async function requestEmailChangeCodes(newEmail: string) {
 export async function requestPaymentCode() {
     const response = await fetch(`${BASE_URL}/payment/send-code`, {
         method: "POST",
-        headers: {
-            ...getAuthHeaders()
-        }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -112,9 +85,9 @@ export async function requestPaymentCode() {
 export async function verifyPaymentCode(code: string) {
     const response = await fetch(`${BASE_URL}/payment/verify-code`, {
         method: "POST",
+        credentials: "include",
         headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders()
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({ code })
     });
@@ -131,6 +104,7 @@ export async function requestLoginCode(email: string) {
     const normalizedEmail = email.trim().toLowerCase();
     const response = await fetch(`${BASE_URL}/login`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json"
         },
@@ -149,6 +123,7 @@ export async function verifyLoginCode(email: string, code: string) {
     const normalizedEmail = email.trim().toLowerCase();
     const response = await fetch(`${BASE_URL}/verify-login`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json"
         },
@@ -159,15 +134,7 @@ export async function verifyLoginCode(email: string, code: string) {
         throw await buildError(response, "Failed to verify login code");
     }
 
-    const data = await response.json();
-    if (data?.token) {
-        localStorage.setItem(TOKEN_KEY, data.token);
-    }
-    if (data?.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
-    }
-
-    return data;
+    return await response.json();
 }
 
 // Send signup code.
@@ -175,6 +142,7 @@ export async function requestSignupCode(firstName: string, lastName: string, ema
     const normalizedEmail = email.trim().toLowerCase();
     const response = await fetch(`${BASE_URL}/signup`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json"
         },
@@ -193,6 +161,7 @@ export async function verifySignupCode(email: string, code: string) {
     const normalizedEmail = email.trim().toLowerCase();
     const response = await fetch(`${BASE_URL}/verify-signup`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json"
         },
@@ -203,24 +172,14 @@ export async function verifySignupCode(email: string, code: string) {
         throw await buildError(response, "Failed to verify signup code");
     }
 
-    const data = await response.json();
-    if (data?.token) {
-        localStorage.setItem(TOKEN_KEY, data.token);
-    }
-    if (data?.refreshToken) {
-        localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
-    }
-
-    return data;
+    return await response.json();
 }
 
-// Get currently logged-in user from backend JWT token.
+// Get currently logged-in user from backend session cookie.
 export async function getCurrentUser() {
     let response = await fetch(`${BASE_URL}/me`, {
         method: "GET",
-        headers: {
-            ...getAuthHeaders()
-        }
+        credentials: "include"
     });
 
     if (response.status === 401) {
@@ -228,9 +187,7 @@ export async function getCurrentUser() {
         if (refreshed) {
             response = await fetch(`${BASE_URL}/me`, {
                 method: "GET",
-                headers: {
-                    ...getAuthHeaders()
-                }
+                credentials: "include"
             });
         }
     }
@@ -244,18 +201,10 @@ export async function getCurrentUser() {
 
 // Log out current user.
 export async function logoutUser() {
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     const response = await fetch(`${BASE_URL}/logout`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders()
-        },
-        body: JSON.stringify({ refreshToken })
+        credentials: "include"
     });
-
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
 
     if (!response.ok) {
         throw await buildError(response, "Failed to log out");

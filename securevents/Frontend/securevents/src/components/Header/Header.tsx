@@ -40,7 +40,8 @@ const Header: React.FC<HeaderProps> = ({
     { label: "Log Out", icon: "bi-box-arrow-right", path: "/" },
   ];
 
-  const storedProfile = localStorage.getItem("secureEventsProfileImage");
+  const profileStorageKey = `secureEventsProfileImage:${user?.id ?? user?.email ?? "guest"}`;
+  const storedProfile = localStorage.getItem(profileStorageKey) || localStorage.getItem("secureEventsProfileImage");
 
   const handleMenuClick = async (item: { label: string; path: string }) => {
     if (item.label === "Log Out") {

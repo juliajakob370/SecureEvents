@@ -6,6 +6,7 @@ import "../../styles/MainPage.css";
 import "../../styles/PostEventPage.css";
 import defaultImage from "../../assets/default-image.png";
 import { AuthContext } from "../../context/AuthContext";
+import { uploadEventImage } from "../../api/eventApi";
 
 const PostEventPage: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -15,6 +16,8 @@ const PostEventPage: React.FC = () => {
   const [description, setDescription] = useState("");
 
   const [image, setImage] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [capacity, setCapacity] = useState(50);
   const [price, setPrice] = useState("");
   const [isFree, setIsFree] = useState(false);
@@ -25,7 +28,7 @@ const PostEventPage: React.FC = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -44,12 +47,41 @@ const PostEventPage: React.FC = () => {
       return;
     }
 
-    setImage(URL.createObjectURL(file));
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview((prev) => {
+      if (prev && prev.startsWith("blob:")) {
+        URL.revokeObjectURL(prev);
+      }
+      return previewUrl;
+    });
+    setUploadingImage(true);
+    try {
+      const uploaded = await uploadEventImage(file);
+      if (!uploaded.imageUrl) {
+        throw new Error("Upload did not return image url.");
+      }
+
+      setImage(uploaded.imageUrl);
+      setErrors((prev) => ({ ...prev, image: "" }));
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, image: err instanceof Error ? err.message : "Failed to upload image." }));
+      setImage(null);
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   useEffect(() => {
     if (isFree) setPrice("");
   }, [isFree]);
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -91,6 +123,11 @@ const PostEventPage: React.FC = () => {
 
     const fullDateTime = new Date(`${date}T${time}`);
 
+    if (uploadingImage) {
+      setErrors((prev) => ({ ...prev, image: "Image is still uploading. Please wait." }));
+      return;
+    }
+
     const newEvent = {
       title: title.trim(),
       organizer: `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() || user?.email || "Organizer",
@@ -121,6 +158,7 @@ const PostEventPage: React.FC = () => {
     setDescription("");
     setPrice("");
     setImage(null);
+    setImagePreview(null);
     setCapacity(50);
     setIsFree(false);
     setErrors({});
@@ -135,7 +173,8 @@ const PostEventPage: React.FC = () => {
     location.trim() &&
     description.trim() &&
     capacity > 0 &&
-    (isFree || price.trim());
+    (isFree || price.trim()) &&
+    !uploadingImage;
 
   return (
     <div style={{ padding: "20px" }}>
@@ -148,7 +187,7 @@ const PostEventPage: React.FC = () => {
             {/* LEFT */}
             <div className="post-left-card">
               <div className="image-container">
-                <img src={image || defaultImage} alt="Event" />
+                <img src={imagePreview || image || defaultImage} alt="Event" />
               </div>
 
               <label className="upload-btn">
@@ -172,6 +211,7 @@ const PostEventPage: React.FC = () => {
                 />
               </div>
               {errors.capacity && <p className="form-error">{errors.capacity}</p>}
+              {errors.image && <p className="form-error">{errors.image}</p>}
 
               <div className="price-section">
                 <span className="price-label">Price Per Ticket</span>
@@ -269,7 +309,7 @@ const PostEventPage: React.FC = () => {
                 onClick={handleSubmit}
                 disabled={!isFormValid}
               >
-                Post Event!
+                {uploadingImage ? "Uploading image..." : "Post Event!"}
               </button>
               {errors.submit && <p className="form-error">{errors.submit}</p>}
             </div>

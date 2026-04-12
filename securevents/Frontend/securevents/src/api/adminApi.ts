@@ -4,11 +4,6 @@ const USER_BASE = "http://localhost:5000/api/users";
 const EVENT_BASE = "http://localhost:5000/api/events";
 const BOOKING_BASE = "http://localhost:5000/api/bookings";
 
-function getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem("securevents_token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
 async function buildError(response: Response, fallback: string) {
     try {
         const data = await response.json();
@@ -23,7 +18,7 @@ async function buildError(response: Response, fallback: string) {
 
 export async function getAdminUsers() {
     const response = await fetch(`${USER_BASE}/admin/all`, {
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -36,7 +31,7 @@ export async function getAdminUsers() {
 export async function suspendUser(userId: number) {
     const response = await fetch(`${USER_BASE}/admin/${userId}/suspend`, {
         method: "POST",
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -49,7 +44,7 @@ export async function suspendUser(userId: number) {
 export async function unsuspendUser(userId: number) {
     const response = await fetch(`${USER_BASE}/admin/${userId}/unsuspend`, {
         method: "POST",
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -61,7 +56,7 @@ export async function unsuspendUser(userId: number) {
 
 export async function getPendingEvents(): Promise<EventItem[]> {
     const response = await fetch(`${EVENT_BASE}/admin/pending`, {
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -73,7 +68,7 @@ export async function getPendingEvents(): Promise<EventItem[]> {
 
 export async function getAllEvents(): Promise<EventItem[]> {
     const response = await fetch(`${EVENT_BASE}/admin/all`, {
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -86,7 +81,7 @@ export async function getAllEvents(): Promise<EventItem[]> {
 export async function approveEvent(eventId: number) {
     const response = await fetch(`${EVENT_BASE}/${eventId}/admin/approve`, {
         method: "POST",
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -99,7 +94,7 @@ export async function approveEvent(eventId: number) {
 export async function rejectEvent(eventId: number) {
     const response = await fetch(`${EVENT_BASE}/${eventId}/admin/reject`, {
         method: "POST",
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -112,7 +107,7 @@ export async function rejectEvent(eventId: number) {
 export async function cancelEventAsAdmin(eventId: number) {
     const response = await fetch(`${EVENT_BASE}/${eventId}`, {
         method: "DELETE",
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -124,7 +119,7 @@ export async function cancelEventAsAdmin(eventId: number) {
 
 export async function getAdminBookings() {
     const response = await fetch(`${BOOKING_BASE}/admin/all`, {
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -137,7 +132,7 @@ export async function getAdminBookings() {
 export async function cancelBookingAsAdmin(bookingId: number) {
     const response = await fetch(`${BOOKING_BASE}/${bookingId}/cancel`, {
         method: "POST",
-        headers: { ...getAuthHeaders() }
+        credentials: "include"
     });
 
     if (!response.ok) {

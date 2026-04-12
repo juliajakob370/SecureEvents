@@ -24,7 +24,7 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:3000", "http://localhost:5000")
             .AllowAnyHeader()
             .AllowAnyMethod()
-            .DisallowCredentials();
+            .AllowCredentials();
     });
 });
 
@@ -46,6 +46,20 @@ builder.Services
             ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
             ClockSkew = TimeSpan.Zero
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (string.IsNullOrWhiteSpace(context.Token) &&
+                    context.Request.Cookies.TryGetValue("securevents_token", out var cookieToken))
+                {
+                    context.Token = cookieToken;
+                }
+
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -81,6 +95,7 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("Frontend");
 app.UseMiddleware<GatewayOnlyMiddleware>();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "event-management" }));

@@ -1,10 +1,5 @@
 const BASE_URL = "http://localhost:5000/api/bookings";
 
-function getAuthHeaders(): Record<string, string> {
-    const token = localStorage.getItem("securevents_token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-}
-
 async function buildError(response: Response, fallback: string) {
     try {
         const data = await response.json();
@@ -27,9 +22,9 @@ export async function createBooking(payload: {
 }) {
     const response = await fetch(BASE_URL, {
         method: "POST",
+        credentials: "include",
         headers: {
-            "Content-Type": "application/json",
-            ...getAuthHeaders()
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
     });
@@ -44,9 +39,7 @@ export async function createBooking(payload: {
 export async function getBookingsByEmail(email: string) {
     const response = await fetch(`${BASE_URL}?email=${encodeURIComponent(email)}`, {
         method: "GET",
-        headers: {
-            ...getAuthHeaders()
-        }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -59,9 +52,7 @@ export async function getBookingsByEmail(email: string) {
 export async function getBookingsByEvent(eventId: number) {
     const response = await fetch(`${BASE_URL}?eventId=${eventId}`, {
         method: "GET",
-        headers: {
-            ...getAuthHeaders()
-        }
+        credentials: "include"
     });
 
     if (!response.ok) {
@@ -74,9 +65,7 @@ export async function getBookingsByEvent(eventId: number) {
 export async function cancelBooking(bookingId: number) {
     const response = await fetch(`${BASE_URL}/${bookingId}/cancel`, {
         method: "POST",
-        headers: {
-            ...getAuthHeaders()
-        }
+        credentials: "include"
     });
 
     if (!response.ok) {

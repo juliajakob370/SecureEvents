@@ -39,6 +39,7 @@ const profileOptions = [
 // Account page component.
 const AccountPage: React.FC = () => {
     const { user, refreshUser } = useContext(AuthContext);
+    const profileStorageKey = `secureEventsProfileImage:${user?.id ?? user?.email ?? "guest"}`;
 
     // User info state.
     const [firstName, setFirstName] = useState("Current");
@@ -71,11 +72,11 @@ const AccountPage: React.FC = () => {
             setSavedCards(JSON.parse(storedCards));
         }
 
-        const storedProfile = localStorage.getItem("secureEventsProfileImage");
+        const storedProfile = localStorage.getItem(profileStorageKey) || localStorage.getItem("secureEventsProfileImage");
         if (storedProfile) {
             setSelectedProfile(storedProfile);
         }
-    }, []);
+    }, [profileStorageKey]);
 
     useEffect(() => {
         if (user) {
@@ -131,7 +132,7 @@ const AccountPage: React.FC = () => {
     };
 
     const handleChooseProfile = () => {
-        localStorage.setItem("secureEventsProfileImage", selectedProfile);
+        localStorage.setItem(profileStorageKey, selectedProfile);
         setShowPopup(false);
         setProfileMessage("Profile picture updated.");
     };

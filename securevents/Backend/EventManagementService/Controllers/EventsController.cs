@@ -15,12 +15,53 @@ public class EventsController : ControllerBase
     private readonly EventDbContext _context;
     private readonly LoggingClient _loggingClient;
     private readonly ILogger<EventsController> _logger;
+    private readonly IWebHostEnvironment _environment;
 
-    public EventsController(EventDbContext context, LoggingClient loggingClient, ILogger<EventsController> logger)
+    public EventsController(EventDbContext context, LoggingClient loggingClient, ILogger<EventsController> logger, IWebHostEnvironment environment)
     {
         _context = context;
         _loggingClient = loggingClient;
         _logger = logger;
+        _environment = environment;
+    }
+
+    [HttpPost("upload-image")]
+    [Authorize(Policy = "OwnerOrAdmin")]
+    [RequestSizeLimit(2 * 1024 * 1024)]
+    public async Task<IActionResult> UploadImage([FromForm] IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { message = "Image file is required." });
+        }
+
+        var allowed = new[] { "image/jpeg", "image/png", "image/webp" };
+        if (!allowed.Contains(file.ContentType))
+        {
+            return BadRequest(new { message = "Only JPG, PNG, and WEBP images are allowed." });
+        }
+
+        if (!TryGetCurrentUserId(out var userId))
+        {
+            return Unauthorized(new { message = "Not logged in" });
+        }
+
+        var uploadsRoot = Path.Combine(_environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot"), "uploads", "events", userId.ToString());
+        Directory.CreateDirectory(uploadsRoot);
+
+        var extension = Path.GetExtension(file.FileName);
+        var fileName = $"{Guid.NewGuid():N}{extension}";
+        var fullPath = Path.Combine(uploadsRoot, fileName);
+
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var relativeUrl = $"/uploads/events/{userId}/{fileName}";
+        await _loggingClient.LogAsync("event-image-uploaded", $"User {userId} uploaded event image {fileName}");
+
+        return Ok(new { imageUrl = relativeUrl });
     }
 
     [HttpGet]

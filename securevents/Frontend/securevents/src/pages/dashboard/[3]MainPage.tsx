@@ -1,5 +1,5 @@
 // Imports: React context, reusable header, styles, event card, and profile image.
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
 import EventCard from "../../components/EventCard/EventCard";
@@ -11,7 +11,7 @@ import { useMemo, useState } from "react";
 // Main dashboard page.
 const MainPage: React.FC = () => {
     // Read posted events from shared context.
-    const { events } = useContext(EventContext);
+    const { events, refreshEvents } = useContext(EventContext);
     const { user } = useContext(AuthContext);
     const [searchText, setSearchText] = useState("");
 
@@ -28,6 +28,11 @@ const MainPage: React.FC = () => {
             event.description.toLowerCase().includes(term)
         );
     }, [events, searchText]);
+
+    useEffect(() => {
+        // Keep public list fresh after admin approval/rejection actions.
+        refreshEvents();
+    }, [refreshEvents]);
 
     return (
         <div style={{ padding: "20px" }}>

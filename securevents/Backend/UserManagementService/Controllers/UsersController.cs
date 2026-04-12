@@ -108,14 +108,13 @@ public class UsersController : ControllerBase
 
         var token = GenerateJwtToken(user);
         var refreshToken = await IssueRefreshTokenAsync(user.Id);
+        WriteAuthCookies(token, refreshToken);
 
         await _loggingClient.LogAsync("login-success", $"User {email} logged in");
 
         return Ok(new
         {
             message = "Login verified",
-            token,
-            refreshToken,
             user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role)
         });
     }
@@ -188,14 +187,13 @@ public class UsersController : ControllerBase
 
         var token = GenerateJwtToken(user);
         var refreshToken = await IssueRefreshTokenAsync(user.Id);
+        WriteAuthCookies(token, refreshToken);
 
         await _loggingClient.LogAsync("signup-success", $"User {email} created");
 
         return Ok(new
         {
             message = "Signup verified",
-            token,
-            refreshToken,
             user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role)
         });
     }
@@ -380,15 +378,26 @@ public class UsersController : ControllerBase
             await _context.SaveChangesAsync();
         }
 
+        ClearAuthCookies();
+
         return Ok(new { message = "Logged out" });
     }
 
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
+        var refreshTokenValue = string.IsNullOrWhiteSpace(request.RefreshToken)
+            ? Request.Cookies["securevents_refresh_token"]
+            : request.RefreshToken;
+
+        if (string.IsNullOrWhiteSpace(refreshTokenValue))
+        {
+            return Unauthorized(new { message = "Invalid refresh token" });
+        }
+
         // OWASP A07 FIXED: Refresh token rotation + revocation adds server-side session control.
         var existing = await _context.RefreshTokens
-            .Where(x => x.Token == request.RefreshToken && !x.IsRevoked)
+            .Where(x => x.Token == refreshTokenValue && !x.IsRevoked)
             .OrderByDescending(x => x.Id)
             .FirstOrDefaultAsync();
 
@@ -411,10 +420,11 @@ public class UsersController : ControllerBase
         existing.IsRevoked = true;
         var newAccessToken = GenerateJwtToken(user);
         var newRefreshToken = await IssueRefreshTokenAsync(user.Id);
+        WriteAuthCookies(newAccessToken, newRefreshToken);
 
         await _context.SaveChangesAsync();
 
-        return Ok(new { token = newAccessToken, refreshToken = newRefreshToken });
+        return Ok(new { message = "Session refreshed" });
     }
 
     [Authorize(Policy = "AdminOnly")]
@@ -660,5 +670,35 @@ public class UsersController : ControllerBase
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private void WriteAuthCookies(string accessToken, string refreshToken)
+    {
+        var secure = Request.IsHttps;
+
+        // OWASP A07 FIXED: Session tokens delivered as HttpOnly cookies to reduce JS access/token theft risk.
+        Response.Cookies.Append("securevents_token", accessToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = secure,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(120),
+            Path = "/"
+        });
+
+        Response.Cookies.Append("securevents_refresh_token", refreshToken, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = secure,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddDays(7),
+            Path = "/"
+        });
+    }
+
+    private void ClearAuthCookies()
+    {
+        Response.Cookies.Delete("securevents_token", new CookieOptions { Path = "/" });
+        Response.Cookies.Delete("securevents_refresh_token", new CookieOptions { Path = "/" });
     }
 }

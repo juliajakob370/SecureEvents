@@ -12,7 +12,8 @@ builder.Services.AddCors(options =>
         // OWASP A05 FIXED: explicit origin allowlist avoids cross-domain misconfiguration.
         policy.WithOrigins(allowedOrigins)
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -46,7 +47,18 @@ app.Use(async (context, next) =>
     context.Response.Headers.TryAdd("Cross-Origin-Opener-Policy", "same-origin");
     context.Response.Headers.TryAdd("Cross-Origin-Resource-Policy", "same-site");
     context.Response.Headers.TryAdd("Referrer-Policy", "no-referrer");
-    context.Response.Headers.TryAdd("Content-Security-Policy", "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
+    context.Response.Headers.TryAdd(
+        "Content-Security-Policy",
+        "default-src 'self'; " +
+        "base-uri 'self'; " +
+        "object-src 'none'; " +
+        "frame-ancestors 'none'; " +
+        "script-src 'self'; " +
+        "style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: blob:; " +
+        "font-src 'self' data:; " +
+        "connect-src 'self' http://localhost:5000; " +
+        "form-action 'self';");
 
     if (context.Request.IsHttps)
     {
