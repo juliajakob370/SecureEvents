@@ -1,14 +1,9 @@
+using System.Text.RegularExpressions;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace EventManagementService.Data;
 
-// Code-first bootstrapper for a shared SQL Server database. Three concerns:
-//   1) Wait for the DB server to be reachable (LocalDB cold start can take a moment).
-//   2) Create the database if it is missing — without letting EF log a command
-//      error when another service wins the race.
-//   3) Create only the tables this context owns that aren't already present.
-// No EF migrations are used; the model is the source of truth.
 internal static class DbInitializer
 {
     public static void Initialize(DbContext db, string serviceLabel)
@@ -57,7 +52,6 @@ internal static class DbInitializer
                 }
                 catch (SqlException ex) when (ex.Number == 1801)
                 {
-                    // Another service created it between our check and our create.
                 }
                 return;
             }
@@ -80,12 +74,8 @@ internal static class DbInitializer
         var existing = QueryExistingTables(db);
         if (modelTables.All(existing.Contains)) return;
 
-        // Any missing table means we run the full create script; each statement
-        // is guarded so already-present tables/indexes don't abort the rest.
         var script = db.Database.GenerateCreateScript();
-        var statements = script.Split(
-            new[] { "\r\nGO\r\n", "\nGO\n", "\r\nGO\r", "\nGO", ";\r\n", ";\n" },
-            StringSplitOptions.RemoveEmptyEntries);
+        var statements = Regex.Split(script, @"^\s*GO\s*;?\s*$", RegexOptions.Multiline);
 
         foreach (var raw in statements)
         {
@@ -97,7 +87,6 @@ internal static class DbInitializer
             }
             catch (Exception ex) when (IsAlreadyExists(ex))
             {
-                // Safe race: another service or a prior run created this object.
             }
             catch (Exception ex)
             {
