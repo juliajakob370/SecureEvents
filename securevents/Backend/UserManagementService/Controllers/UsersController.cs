@@ -287,12 +287,34 @@ public class UsersController : ControllerBase
 
         // A03 FIXED: EF Core LINQ update avoids SQL injection-prone raw SQL.
         // A05 FIXED: Server-side validation is applied before updating profile data.
+        var emailChanged = !string.Equals(user.Email, email, StringComparison.OrdinalIgnoreCase);
         user.FirstName = firstName;
         user.LastName = lastName;
         user.Email = email;
 
         await _context.SaveChangesAsync();
         await _loggingClient.LogAsync("profile-updated", $"User {user.Email} updated profile");
+
+        // OWASP A07 FIXED: On email change, revoke all prior refresh tokens and reissue the JWT
+        // so the email claim stays in sync. Prevents stale sessions from authenticating with the
+        // old email and blocks email-validated endpoints (e.g. bookings) from rejecting the user.
+        if (emailChanged)
+        {
+            // OWASP A07 FIXED: Revoke existing refresh tokens to invalidate prior sessions.
+            var existingTokens = await _context.RefreshTokens
+                .Where(x => x.UserId == user.Id && !x.IsRevoked)
+                .ToListAsync();
+            foreach (var existingToken in existingTokens)
+            {
+                existingToken.IsRevoked = true;
+            }
+            await _context.SaveChangesAsync();
+
+            // OWASP A07 FIXED: Reissue JWT + refresh token with the updated email claim.
+            var newToken = GenerateJwtToken(user);
+            var newRefreshToken = await IssueRefreshTokenAsync(user.Id);
+            WriteAuthCookies(newToken, newRefreshToken);
+        }
 
         return Ok(new
         {

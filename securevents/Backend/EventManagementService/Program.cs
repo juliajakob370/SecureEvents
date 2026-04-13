@@ -3,6 +3,7 @@ using EventManagementService.Middleware;
 using EventManagementService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -95,7 +96,17 @@ using (var scope = app.Services.CreateScope())
 
 app.UseCors("Frontend");
 app.UseMiddleware<GatewayOnlyMiddleware>();
-app.UseStaticFiles();
+
+// Explicit static file serving for event image uploads.
+// Bound to a known disk path so it does not depend on WebRootPath detection,
+// which returns null when wwwroot does not exist at startup.
+var uploadsRoot = Path.Combine(app.Environment.ContentRootPath, "wwwroot", "uploads");
+Directory.CreateDirectory(uploadsRoot);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsRoot),
+    RequestPath = "/uploads"
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "event-management" }));

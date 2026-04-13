@@ -46,7 +46,7 @@ public class EventsController : ControllerBase
             return Unauthorized(new { message = "Not logged in" });
         }
 
-        var uploadsRoot = Path.Combine(_environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot"), "uploads", "events", userId.ToString());
+        var uploadsRoot = Path.Combine(_environment.ContentRootPath, "wwwroot", "uploads", "events", userId.ToString());
         Directory.CreateDirectory(uploadsRoot);
 
         var extension = Path.GetExtension(file.FileName);
@@ -159,13 +159,25 @@ public class EventsController : ControllerBase
             return Forbid();
         }
 
-        // OWASP A01 FIXED: Non-admin users cannot bypass moderation by force-setting active status on pending events.
-        var nextStatus = request.Status;
-        if (!IsAdmin() && eventItem.Status == "pending" && request.Status != "pending")
+        // OWASP A01 FIXED: Any non-admin edit routes the event back through moderation
+        // so unreviewed content cannot reach the public feed. Cancelled events stay
+        // cancelled; admins can set status freely.
+        string nextStatus;
+        if (IsAdmin())
+        {
+            nextStatus = request.Status;
+        }
+        else if (eventItem.Status == "cancelled")
+        {
+            nextStatus = "cancelled";
+        }
+        else
         {
             nextStatus = "pending";
         }
 
+        // In-place update only — the same row flips status. No new event row is created,
+        // so admin approval will not duplicate the event on the public feed.
         eventItem.Title = request.Title;
         eventItem.Date = request.Date;
         eventItem.Time = request.Time;
@@ -178,7 +190,7 @@ public class EventsController : ControllerBase
         eventItem.Price = request.Price;
 
         await _context.SaveChangesAsync();
-        await _loggingClient.LogAsync("event-updated", $"Event '{eventItem.Title}' updated");
+        await _loggingClient.LogAsync("event-updated", $"Event '{eventItem.Title}' updated (status={nextStatus})");
 
         return Ok(eventItem);
     }

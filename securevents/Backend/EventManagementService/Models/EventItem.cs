@@ -17,7 +17,7 @@ public class EventItem
     public string Description { get; set; } = string.Empty;
     [Required, MaxLength(100)]
     public string Organizer { get; set; } = string.Empty;
-    [Required, MaxLength(500)]
+    [MaxLength(500)]
     public string Image { get; set; } = string.Empty;
     [Required, MaxLength(20)]
     public string Status { get; set; } = "active";

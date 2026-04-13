@@ -17,22 +17,22 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddRateLimiter(options =>
-{
-    // OWASP A04/A07 FIXED: Gateway throttling limits abusive automated traffic.
-    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 120,
-                Window = TimeSpan.FromMinutes(1),
-                QueueLimit = 0,
-                AutoReplenishment = true
-            }));
-
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-});
+// OWASP A04/A07: Gateway throttling disabled temporarily for local testing. Re-enable before shipping.
+// builder.Services.AddRateLimiter(options =>
+// {
+//     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+//         RateLimitPartition.GetFixedWindowLimiter(
+//             partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+//             factory: _ => new FixedWindowRateLimiterOptions
+//             {
+//                 PermitLimit = 1200,
+//                 Window = TimeSpan.FromMinutes(1),
+//                 QueueLimit = 0,
+//                 AutoReplenishment = true
+//             }));
+//
+//     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+// });
 
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -45,20 +45,30 @@ app.Use(async (context, next) =>
     context.Response.Headers.TryAdd("X-Content-Type-Options", "nosniff");
     context.Response.Headers.TryAdd("X-Frame-Options", "DENY");
     context.Response.Headers.TryAdd("Cross-Origin-Opener-Policy", "same-origin");
-    context.Response.Headers.TryAdd("Cross-Origin-Resource-Policy", "same-site");
     context.Response.Headers.TryAdd("Referrer-Policy", "no-referrer");
-    context.Response.Headers.TryAdd(
-        "Content-Security-Policy",
-        "default-src 'self'; " +
-        "base-uri 'self'; " +
-        "object-src 'none'; " +
-        "frame-ancestors 'none'; " +
-        "script-src 'self'; " +
-        "style-src 'self' 'unsafe-inline'; " +
-        "img-src 'self' data: blob:; " +
-        "font-src 'self' data:; " +
-        "connect-src 'self' http://localhost:5000; " +
-        "form-action 'self';");
+
+    // OWASP A05 FIXED: Static event uploads are public, cross-origin-embeddable images;
+    // all other responses keep the stricter same-site Cross-Origin-Resource-Policy.
+    if (context.Request.Path.StartsWithSegments("/uploads"))
+    {
+        context.Response.Headers.TryAdd("Cross-Origin-Resource-Policy", "cross-origin");
+    }
+    else
+    {
+        context.Response.Headers.TryAdd("Cross-Origin-Resource-Policy", "same-site");
+        context.Response.Headers.TryAdd(
+            "Content-Security-Policy",
+            "default-src 'self'; " +
+            "base-uri 'self'; " +
+            "object-src 'none'; " +
+            "frame-ancestors 'none'; " +
+            "script-src 'self'; " +
+            "style-src 'self' 'unsafe-inline'; " +
+            "img-src 'self' data: blob: http://localhost:5000; " +
+            "font-src 'self' data:; " +
+            "connect-src 'self' http://localhost:5000; " +
+            "form-action 'self';");
+    }
 
     if (context.Request.IsHttps)
     {
@@ -69,7 +79,7 @@ app.Use(async (context, next) =>
 });
 
 app.UseCors("Frontend");
-app.UseRateLimiter();
+// app.UseRateLimiter();
 app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "api-gateway" }));
 app.MapReverseProxy();
 app.Run();

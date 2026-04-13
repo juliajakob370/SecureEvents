@@ -1,8 +1,10 @@
 using EventManagementService.Data;
 using EventManagementService.Models;
 using EventManagementService.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace EventManagementService.Controllers;
 
@@ -20,6 +22,8 @@ public class PaymentsController : ControllerBase
     }
 
     [HttpPost("checkout")]
+    // OWASP A01 FIXED: Authentication required. Anonymous users cannot create payment transactions.
+    [Authorize(Policy = "OwnerOrAdmin")]
     public async Task<IActionResult> Checkout([FromBody] CheckoutRequest request)
     {
         if (!ModelState.IsValid)
@@ -42,6 +46,15 @@ public class PaymentsController : ControllerBase
         if (cleanLast4.Length != 4 || !cleanLast4.All(char.IsDigit))
         {
             return BadRequest(new { message = "Card last 4 digits are invalid." });
+        }
+
+        // OWASP A01 FIXED: Buyer email must match the authenticated user's JWT email claim.
+        // Prevents an attacker from issuing payments attributed to another account.
+        var currentEmail = User.FindFirstValue(ClaimTypes.Email)?.Trim().ToLowerInvariant();
+        if (string.IsNullOrWhiteSpace(currentEmail) ||
+            !string.Equals(request.BuyerEmail.Trim(), currentEmail, StringComparison.OrdinalIgnoreCase))
+        {
+            return Forbid();
         }
 
         var eventItem = await _context.Events.FirstOrDefaultAsync(x => x.Id == request.EventId && !x.IsDeleted);
