@@ -11,4 +11,7 @@ public class User
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Index into the frontend profilePics set (profile0..profile7). 0 is the default.
+    public int ProfileImageIndex { get; set; } = 0;
 }

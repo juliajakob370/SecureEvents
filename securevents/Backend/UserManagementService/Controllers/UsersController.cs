@@ -115,7 +115,7 @@ public class UsersController : ControllerBase
         return Ok(new
         {
             message = "Login verified",
-            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role)
+            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role, user.ProfileImageIndex)
         });
     }
 
@@ -194,7 +194,7 @@ public class UsersController : ControllerBase
         return Ok(new
         {
             message = "Signup verified",
-            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role)
+            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role, user.ProfileImageIndex)
         });
     }
 
@@ -220,7 +220,7 @@ public class UsersController : ControllerBase
         }
 
         // A02 FIXED: Sensitive fields are not returned.
-        return Ok(new { user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role) });
+        return Ok(new { user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role, user.ProfileImageIndex) });
     }
 
     [Authorize(Policy = "OwnerOrAdmin")]
@@ -319,7 +319,39 @@ public class UsersController : ControllerBase
         return Ok(new
         {
             message = "Profile updated",
-            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role)
+            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role, user.ProfileImageIndex)
+        });
+    }
+
+    [Authorize(Policy = "OwnerOrAdmin")]
+    [HttpPut("me/profile-image")]
+    public async Task<IActionResult> UpdateProfileImage([FromBody] UpdateProfileImageRequest request)
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(claim, out var userId))
+        {
+            return Unauthorized(new { message = "Not logged in" });
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId && !x.IsDeleted);
+        if (user == null)
+        {
+            return Unauthorized(new { message = "Invalid token" });
+        }
+
+        // Server-side bounds check in case model validation is bypassed.
+        if (request.ProfileImageIndex < 0 || request.ProfileImageIndex > 7)
+        {
+            return BadRequest(new { message = "Profile image index must be between 0 and 7." });
+        }
+
+        user.ProfileImageIndex = request.ProfileImageIndex;
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "Profile image updated",
+            user = new UserResponse(user.Id, user.FirstName, user.LastName, user.Email, user.Role, user.ProfileImageIndex)
         });
     }
 

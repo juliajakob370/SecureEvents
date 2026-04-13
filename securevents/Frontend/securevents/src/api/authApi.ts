@@ -38,6 +38,23 @@ export async function updateCurrentUser(
     return await response.json();
 }
 
+// Update just the profile picture index (0-7) for the logged-in user.
+export async function updateProfileImage(profileImageIndex: number) {
+    const response = await authFetch(`${BASE_URL}/me/profile-image`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ profileImageIndex })
+    });
+
+    if (!response.ok) {
+        throw await buildError(response, "Failed to update profile picture");
+    }
+
+    return await response.json();
+}
+
 export async function requestEmailChangeCodes(newEmail: string) {
     const response = await authFetch(`${BASE_URL}/email-change/request-codes`, {
         method: "POST",

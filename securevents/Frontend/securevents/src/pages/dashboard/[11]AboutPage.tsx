@@ -3,7 +3,6 @@ import React from "react";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
 import "../../styles/[11]AboutPage.css";
-import profile0 from "../../assets/profilePics/profile0.png";
 
 // Dashboard About Page component (after login).
 const AboutDashboardPage: React.FC = () => {
@@ -17,7 +16,6 @@ const AboutDashboardPage: React.FC = () => {
                 centerType="title"
                 title="About"
                 showProfile={true}
-                profileImage={profile0}
             />
 
             {/* Scrollable dashboard container */}

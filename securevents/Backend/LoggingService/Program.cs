@@ -9,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<LoggingDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HomeInventoryConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SecureEventConnection")));
 
 builder.Services.AddCors(options =>
 {

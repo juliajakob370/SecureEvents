@@ -9,6 +9,7 @@ type AuthUser = {
     firstName?: string;
     lastName?: string;
     role?: string;
+    profileImageIndex?: number;
 };
 
 // Context type.

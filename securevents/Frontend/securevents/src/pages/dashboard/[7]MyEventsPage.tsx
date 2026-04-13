@@ -7,7 +7,6 @@ import "../../styles/MainPage.css";
 import "../../styles/MyEventsPage.css";
 import "../../styles/SecurEventsStyle.css";
 import MyEventCard from "../../components/MyEventCard/MyEventCard";
-import profile0 from "../../assets/profilePics/profile0.png";
 import { EventContext } from "../../context/EventContext";
 import { AuthContext } from "../../context/AuthContext";
 import { EventItem, getMyEvents } from "../../api/eventApi";
@@ -64,7 +63,6 @@ const MyEventsPage: React.FC = () => {
                 centerType="title"
                 title="MY EVENTS"
                 showHome={true}
-                profileImage={profile0}
             />
 
             {/* Event list */}

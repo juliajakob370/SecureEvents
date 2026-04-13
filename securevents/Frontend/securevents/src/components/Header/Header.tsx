@@ -4,8 +4,19 @@ import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import SearchBar from "../SearchBar/SearchBar";
 import logo from "../../assets/SecureEventLogo.png";
-import defaultProfile from "../../assets/profilePics/profile0.png";
+import profile0 from "../../assets/profilePics/profile0.png";
+import profile1 from "../../assets/profilePics/profile1.png";
+import profile2 from "../../assets/profilePics/profile2.png";
+import profile3 from "../../assets/profilePics/profile3.png";
+import profile4 from "../../assets/profilePics/profile4.png";
+import profile5 from "../../assets/profilePics/profile5.png";
+import profile6 from "../../assets/profilePics/profile6.png";
+import profile7 from "../../assets/profilePics/profile7.png";
 import MenuDropdown from "../MenuDropdown/MenuDropdown";
+
+// Profile picture lookup: the backend stores the index (0 is the default) and
+// each user's picture is derived here so no per-browser state leaks across accounts.
+const PROFILE_IMAGES = [profile0, profile1, profile2, profile3, profile4, profile5, profile6, profile7];
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -40,8 +51,8 @@ const Header: React.FC<HeaderProps> = ({
     { label: "Log Out", icon: "bi-box-arrow-right", path: "/" },
   ];
 
-  const profileStorageKey = `secureEventsProfileImage:${user?.id ?? user?.email ?? "guest"}`;
-  const storedProfile = localStorage.getItem(profileStorageKey) || localStorage.getItem("secureEventsProfileImage");
+  const profileIndex = user?.profileImageIndex ?? 0;
+  const resolvedProfile = PROFILE_IMAGES[profileIndex] ?? PROFILE_IMAGES[0];
 
   const handleMenuClick = async (item: { label: string; path: string }) => {
     if (item.label === "Log Out") {
@@ -72,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
 
         {showProfile && (
           <img
-            src={storedProfile || profileImage || defaultProfile}
+            src={profileImage || resolvedProfile}
             alt="Profile"
             className="header-profile"
             onClick={() => navigate("/account")}

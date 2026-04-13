@@ -15,7 +15,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient<LoggingClient>();
 
 builder.Services.AddDbContext<EventDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HomeInventoryConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SecureEventConnection")));
 
 builder.Services.AddCors(options =>
 {

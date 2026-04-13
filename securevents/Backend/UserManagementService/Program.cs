@@ -17,7 +17,7 @@ builder.Services.AddHttpClient<LoggingClient>();
 builder.Services.AddSingleton<VerificationCodeConsoleLogger>();
 
 builder.Services.AddDbContext<UserDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("HomeInventoryConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SecureEventConnection")));
 
 builder.Services.AddCors(options =>
 {

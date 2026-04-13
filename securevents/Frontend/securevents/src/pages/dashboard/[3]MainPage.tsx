@@ -3,7 +3,6 @@ import React, { useContext, useEffect } from "react";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
 import EventCard from "../../components/EventCard/EventCard";
-import profile0 from "../../assets/profilePics/profile0.png";
 import { EventContext } from "../../context/EventContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useMemo, useState } from "react";
@@ -44,7 +43,6 @@ const MainPage: React.FC = () => {
             <Header
                 centerType="search"
                 showProfile={true}
-                profileImage={profile0}
                 onSearch={setSearchText}
             />
 

@@ -4,7 +4,7 @@ import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
 import "../../styles/[4]AccountPage.css";
 import { AuthContext } from "../../context/AuthContext";
-import { requestEmailChangeCodes, updateCurrentUser } from "../../api/authApi";
+import { requestEmailChangeCodes, updateCurrentUser, updateProfileImage } from "../../api/authApi";
 
 import profile0 from "../../assets/profilePics/profile0.png";
 import profile1 from "../../assets/profilePics/profile1.png";
@@ -39,13 +39,16 @@ const profileOptions = [
 // Account page component.
 const AccountPage: React.FC = () => {
     const { user, applyUser, loading } = useContext(AuthContext);
-    const profileStorageKey = `secureEventsProfileImage:${user?.id ?? user?.email ?? "guest"}`;
+
+    // Cards are scoped per-user so one account's saved cards never leak into another.
+    // Without the user id we render no cards instead of falling back to a shared key.
+    const cardStorageKey = user?.id ? `secureEventsCards:${user.id}` : null;
 
     // User info state.
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
-    const [selectedProfile, setSelectedProfile] = useState(profile0);
+    const [selectedProfileIndex, setSelectedProfileIndex] = useState(0);
     const [showPopup, setShowPopup] = useState(false);
     const [profileMessage, setProfileMessage] = useState("");
     const [oldEmailCode, setOldEmailCode] = useState("");
@@ -65,29 +68,39 @@ const AccountPage: React.FC = () => {
     // Validation errors.
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Load saved cards on page open.
+    // Load the current user's saved cards. If there's no logged-in user yet,
+    // clear local state so a previous account's cards never flash on screen.
     useEffect(() => {
-        const storedCards = localStorage.getItem("secureEventsCards");
-        if (storedCards) {
-            setSavedCards(JSON.parse(storedCards));
+        if (!cardStorageKey) {
+            setSavedCards([]);
+            return;
         }
 
-        const storedProfile = localStorage.getItem(profileStorageKey) || localStorage.getItem("secureEventsProfileImage");
-        if (storedProfile) {
-            setSelectedProfile(storedProfile);
+        const storedCards = localStorage.getItem(cardStorageKey);
+        if (storedCards) {
+            try {
+                setSavedCards(JSON.parse(storedCards));
+            } catch {
+                setSavedCards([]);
+            }
+        } else {
+            setSavedCards([]);
         }
-    }, [profileStorageKey]);
+    }, [cardStorageKey]);
 
     useEffect(() => {
         if (user) {
             setFirstName(user.firstName ?? "Current");
             setLastName(user.lastName ?? "Name");
             setEmail(user.email ?? "current@email.com");
+            setSelectedProfileIndex(user.profileImageIndex ?? 0);
             setEmailChangePending(false);
             setOldEmailCode("");
             setNewEmailCode("");
         }
     }, [user]);
+
+    const displayedProfile = profileOptions[user?.profileImageIndex ?? 0] ?? profile0;
 
     const handleSaveProfile = async () => {
         if (loading || !user) {
@@ -138,10 +151,22 @@ const AccountPage: React.FC = () => {
         }
     };
 
-    const handleChooseProfile = () => {
-        localStorage.setItem(profileStorageKey, selectedProfile);
-        setShowPopup(false);
-        setProfileMessage("Profile picture updated.");
+    const handleChooseProfile = async () => {
+        if (!user) {
+            setProfileMessage("Please wait for account data to load.");
+            return;
+        }
+
+        try {
+            const result = await updateProfileImage(selectedProfileIndex);
+            if (result?.user) {
+                applyUser(result.user);
+            }
+            setShowPopup(false);
+            setProfileMessage("Profile picture updated.");
+        } catch (err) {
+            setProfileMessage(err instanceof Error ? err.message : "Failed to update profile picture.");
+        }
     };
 
     // Validate add card form.
@@ -176,9 +201,13 @@ const AccountPage: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Save a new card to localStorage.
+    // Save a new card to the current user's own localStorage bucket.
     const handleAddCard = () => {
         if (!validateCardForm()) return;
+        if (!cardStorageKey) {
+            setProfileMessage("Please wait for account data to load before saving a card.");
+            return;
+        }
 
         const digitsOnly = cardNumber.replace(/\D/g, "");
 
@@ -192,7 +221,7 @@ const AccountPage: React.FC = () => {
 
         const updatedCards = [...savedCards, newCard];
         setSavedCards(updatedCards);
-        localStorage.setItem("secureEventsCards", JSON.stringify(updatedCards));
+        localStorage.setItem(cardStorageKey, JSON.stringify(updatedCards));
 
         setCardName("");
         setCardNumber("");
@@ -219,7 +248,7 @@ const AccountPage: React.FC = () => {
                         <div className="account-profile-card">
                             <div className="account-profile-top">
                                 <img
-                                    src={selectedProfile}
+                                    src={displayedProfile}
                                     alt="Profile"
                                     className="account-profile-image"
                                 />
@@ -253,6 +282,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={50}
                                             value={firstName}
                                             onChange={(e) => setFirstName(e.target.value)}
+                                            name="given-name"
+                                            autoComplete="given-name"
                                         />
                                     </div>
 
@@ -263,6 +294,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={50}
                                             value={lastName}
                                             onChange={(e) => setLastName(e.target.value)}
+                                            name="family-name"
+                                            autoComplete="family-name"
                                         />
                                     </div>
 
@@ -273,6 +306,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={100}
                                             value={email}
                                             onChange={(e) => setEmail(e.target.value)}
+                                            name="email"
+                                            autoComplete="email"
                                         />
                                     </div>
 
@@ -331,6 +366,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={50}
                                             value={cardName}
                                             onChange={(e) => setCardName(e.target.value)}
+                                            name="cc-name"
+                                            autoComplete="cc-name"
                                         />
                                         {errors.cardName && <p className="form-error">{errors.cardName}</p>}
                                     </div>
@@ -343,6 +380,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={19}
                                             value={cardNumber}
                                             onChange={(e) => setCardNumber(e.target.value.replace(/[^\d\s]/g, ""))}
+                                            name="cc-number"
+                                            autoComplete="cc-number"
                                         />
                                         {errors.cardNumber && <p className="form-error">{errors.cardNumber}</p>}
                                     </div>
@@ -355,6 +394,8 @@ const AccountPage: React.FC = () => {
                                             value={expiryDate}
                                             onChange={(e) => setExpiryDate(e.target.value)}
                                             placeholder="MM/YY"
+                                            name="cc-exp"
+                                            autoComplete="cc-exp"
                                         />
                                         {errors.expiryDate && <p className="form-error">{errors.expiryDate}</p>}
                                     </div>
@@ -367,6 +408,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={4}
                                             value={cvv}
                                             onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
+                                            name="cc-csc"
+                                            autoComplete="cc-csc"
                                         />
                                         {errors.cvv && <p className="form-error">{errors.cvv}</p>}
                                     </div>
@@ -378,6 +421,8 @@ const AccountPage: React.FC = () => {
                                             maxLength={150}
                                             value={billingAddress}
                                             onChange={(e) => setBillingAddress(e.target.value)}
+                                            name="billing-address"
+                                            autoComplete="billing street-address"
                                         />
                                         {errors.billingAddress && <p className="form-error">{errors.billingAddress}</p>}
                                     </div>
@@ -458,8 +503,8 @@ const AccountPage: React.FC = () => {
                             {profileOptions.map((profile, index) => (
                                 <div
                                     key={index}
-                                    className={`profile-choice ${selectedProfile === profile ? "selected" : ""}`}
-                                    onClick={() => setSelectedProfile(profile)}
+                                    className={`profile-choice ${selectedProfileIndex === index ? "selected" : ""}`}
+                                    onClick={() => setSelectedProfileIndex(index)}
                                 >
                                     <img src={profile} alt={`Profile ${index}`} />
                                 </div>

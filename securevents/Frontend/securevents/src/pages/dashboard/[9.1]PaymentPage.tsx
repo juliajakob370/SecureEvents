@@ -73,9 +73,18 @@ const PaymentPage: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [sendingCode, setSendingCode] = useState(false);
 
-    // Load saved cards from localStorage.
+    // Cards are scoped per-user so checkout never sees another account's saved cards.
+    const cardStorageKey = user?.id ? `secureEventsCards:${user.id}` : null;
+
+    // Load only the current user's saved cards.
     useEffect(() => {
-        const storedCards = localStorage.getItem("secureEventsCards");
+        if (!cardStorageKey) {
+            setSavedCards([]);
+            setSelectedCardId(null);
+            return;
+        }
+
+        const storedCards = localStorage.getItem(cardStorageKey);
 
         if (storedCards) {
             try {
@@ -84,12 +93,19 @@ const PaymentPage: React.FC = () => {
 
                 if (parsedCards.length > 0) {
                     setSelectedCardId(parsedCards[0].id);
+                } else {
+                    setSelectedCardId(null);
                 }
             } catch (error) {
                 console.error("Failed to load saved cards:", error);
+                setSavedCards([]);
+                setSelectedCardId(null);
             }
+        } else {
+            setSavedCards([]);
+            setSelectedCardId(null);
         }
-    }, []);
+    }, [cardStorageKey]);
 
     // Selected card details.
     const selectedCard = useMemo(() => {
@@ -128,9 +144,14 @@ const PaymentPage: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Save a new card without storing CVV.
+    // Save a new card without storing CVV, keyed by the current user.
     const handleAddNewCard = () => {
         if (!validateNewCard()) {
+            return;
+        }
+
+        if (!cardStorageKey) {
+            setVerificationMessage("Please wait for account data to load before saving a card.");
             return;
         }
 
@@ -146,7 +167,7 @@ const PaymentPage: React.FC = () => {
 
         const updatedCards = [...savedCards, newCard];
         setSavedCards(updatedCards);
-        localStorage.setItem("secureEventsCards", JSON.stringify(updatedCards));
+        localStorage.setItem(cardStorageKey, JSON.stringify(updatedCards));
         setSelectedCardId(newCard.id);
 
         setCardName("");
@@ -409,6 +430,8 @@ const PaymentPage: React.FC = () => {
                                                 maxLength={50}
                                                 value={cardName}
                                                 onChange={(e) => setCardName(e.target.value)}
+                                                name="cc-name"
+                                                autoComplete="cc-name"
                                             />
                                             {errors.cardName && <p className="form-error">{errors.cardName}</p>}
                                         </div>
@@ -422,6 +445,8 @@ const PaymentPage: React.FC = () => {
                                                 value={cardNumber}
                                                 onChange={(e) => setCardNumber(e.target.value.replace(/[^\d\s]/g, ""))}
                                                 placeholder="1234 5678 9012 3456"
+                                                name="cc-number"
+                                                autoComplete="cc-number"
                                             />
                                             {errors.cardNumber && <p className="form-error">{errors.cardNumber}</p>}
                                         </div>
@@ -434,6 +459,8 @@ const PaymentPage: React.FC = () => {
                                                 value={expiryDate}
                                                 onChange={(e) => setExpiryDate(e.target.value)}
                                                 placeholder="MM/YY"
+                                                name="cc-exp"
+                                                autoComplete="cc-exp"
                                             />
                                             {errors.expiryDate && <p className="form-error">{errors.expiryDate}</p>}
                                         </div>
@@ -447,6 +474,8 @@ const PaymentPage: React.FC = () => {
                                                 value={cvv}
                                                 onChange={(e) => setCvv(e.target.value.replace(/\D/g, ""))}
                                                 placeholder="123"
+                                                name="cc-csc"
+                                                autoComplete="cc-csc"
                                             />
                                             {errors.cvv && <p className="form-error">{errors.cvv}</p>}
                                         </div>
@@ -458,6 +487,8 @@ const PaymentPage: React.FC = () => {
                                                 maxLength={150}
                                                 value={billingAddress}
                                                 onChange={(e) => setBillingAddress(e.target.value)}
+                                                name="billing-address"
+                                                autoComplete="billing street-address"
                                             />
                                             {errors.billingAddress && <p className="form-error">{errors.billingAddress}</p>}
                                         </div>
