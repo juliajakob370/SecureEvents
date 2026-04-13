@@ -114,20 +114,42 @@ using (var scope = app.Services.CreateScope())
             var creator = db.GetService<Microsoft.EntityFrameworkCore.Storage.IRelationalDatabaseCreator>();
             if (!creator.Exists())
             {
-                creator.Create();
+                try
+                {
+                    creator.Create();
+                }
+                catch (Exception ex) when (
+                    ex.Message.Contains("already exists") ||
+                    ex.Message.Contains("Cannot create database"))
+                {
+                    // Another service won the race and created the DB first.
+                }
             }
-            creator.CreateTables();
+            // Execute the create script statement-by-statement so pre-existing
+            // tables don't abort the whole batch and leave newer tables uncreated.
+            var script = db.Database.GenerateCreateScript();
+            var statements = script.Split(
+                new[] { "\r\nGO\r\n", "\nGO\n", "\r\nGO\r", "\nGO", ";\r\n", ";\n" },
+                StringSplitOptions.RemoveEmptyEntries);
+            foreach (var raw in statements)
+            {
+                var statement = raw.Trim();
+                if (string.IsNullOrWhiteSpace(statement)) continue;
+                try
+                {
+                    db.Database.ExecuteSqlRaw(statement);
+                }
+                catch (Exception ex) when (
+                    ex.Message.Contains("already an object named") ||
+                    ex.Message.Contains("already exists"))
+                {
+                    // Table/index already existed — safe to skip.
+                }
+            }
             break;
         }
         catch (Exception ex) when (attempt < 5)
         {
-            // Table-already-exists errors are fine — means another service
-            // created them or a previous run already did.
-            if (ex.Message.Contains("already an object named") ||
-                ex.Message.Contains("already exists"))
-            {
-                break;
-            }
             Console.WriteLine($"[UserManagement] DB init attempt {attempt} failed: {ex.Message}. Retrying...");
             Thread.Sleep(attempt * 2000);
         }
