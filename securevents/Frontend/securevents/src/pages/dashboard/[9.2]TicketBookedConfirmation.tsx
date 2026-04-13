@@ -1,5 +1,5 @@
-// Imports: React effect, router hooks, reusable header, and styles.
-import React, { useEffect } from "react";
+// Imports: router hooks, reusable header, and styles.
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Header from "../../components/Header/Header";
 import "../../styles/MainPage.css";
@@ -19,15 +19,6 @@ type SelectedEvent = {
   capacity: number;
 };
 
-// Type for stored booking.
-type TicketRecord = {
-  id: number;
-  event: SelectedEvent;
-  quantity: number;
-  total: number;
-  bookedAt: string;
-};
-
 // Ticket confirmation page.
 const TicketBookedConfirmation: React.FC = () => {
   // Router tools.
@@ -40,29 +31,6 @@ const TicketBookedConfirmation: React.FC = () => {
   const total = location.state?.total || 0;
   const transactionId = location.state?.transactionId as number | undefined;
 
-  // Save confirmed booking to localStorage.
-  useEffect(() => {
-    if (!event) return;
-
-    const existingTickets = localStorage.getItem("secureEventsTickets");
-    const parsedTickets: TicketRecord[] = existingTickets
-      ? JSON.parse(existingTickets)
-      : [];
-
-    const newTicket: TicketRecord = {
-      id: Date.now(),
-      event,
-      quantity,
-      total,
-      bookedAt: new Date().toISOString(),
-    };
-
-    localStorage.setItem(
-      "secureEventsTickets",
-      JSON.stringify([...parsedTickets, newTicket]),
-    );
-  }, [event, quantity, total]);
-
   return (
     <div style={{ padding: "20px" }}>
       {/* Header */}
@@ -72,7 +40,7 @@ const TicketBookedConfirmation: React.FC = () => {
       <div className="events-container">
         <div className="events-scroll confirmation-scroll">
           <div className="confirmation-card">
-            <div className="confirmation-check">✓</div>
+            <div className="confirmation-check">&#10003;</div>
 
             <h2>Your Ticket Has Been Booked!</h2>
 
