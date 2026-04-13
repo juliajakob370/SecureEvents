@@ -176,8 +176,6 @@ public class EventsController : ControllerBase
             nextStatus = "pending";
         }
 
-        // In-place update only — the same row flips status. No new event row is created,
-        // so admin approval will not duplicate the event on the public feed.
         eventItem.Title = request.Title;
         eventItem.Date = request.Date;
         eventItem.Time = request.Time;
@@ -264,7 +262,6 @@ public class EventsController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        // Print cancellation code in a colorful banner so it's easy to spot.
         var prevColor = Console.ForegroundColor;
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine();
