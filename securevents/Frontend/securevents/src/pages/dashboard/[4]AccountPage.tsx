@@ -5,6 +5,7 @@ import "../../styles/MainPage.css";
 import "../../styles/[4]AccountPage.css";
 import { AuthContext } from "../../context/AuthContext";
 import { requestEmailChangeCodes, updateCurrentUser, updateProfileImage } from "../../api/authApi";
+import { addSavedCard, listSavedCards, removeSavedCard, SavedCard } from "../../api/cardApi";
 
 import profile0 from "../../assets/profilePics/profile0.png";
 import profile1 from "../../assets/profilePics/profile1.png";
@@ -14,15 +15,6 @@ import profile4 from "../../assets/profilePics/profile4.png";
 import profile5 from "../../assets/profilePics/profile5.png";
 import profile6 from "../../assets/profilePics/profile6.png";
 import profile7 from "../../assets/profilePics/profile7.png";
-
-// Card type for saved payment methods.
-type SavedCard = {
-    id: number;
-    cardName: string;
-    cardLast4: string;
-    expiryDate: string;
-    billingAddress: string;
-};
 
 // Selectable profile pictures.
 const profileOptions = [
@@ -40,9 +32,8 @@ const profileOptions = [
 const AccountPage: React.FC = () => {
     const { user, applyUser, loading } = useContext(AuthContext);
 
-    // Cards are scoped per-user so one account's saved cards never leak into another.
-    // Without the user id we render no cards instead of falling back to a shared key.
-    const cardStorageKey = user?.id ? `secureEventsCards:${user.id}` : null;
+    // Cards are scoped per-user on the backend so one account's saved cards
+    // never leak into another and survive logout.
 
     // User info state.
     const [firstName, setFirstName] = useState("");
@@ -68,25 +59,27 @@ const AccountPage: React.FC = () => {
     // Validation errors.
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Load the current user's saved cards. If there's no logged-in user yet,
-    // clear local state so a previous account's cards never flash on screen.
+    // Load the current user's saved cards from the backend. If there's no
+    // logged-in user yet, clear local state so a previous account's cards
+    // never flash on screen.
     useEffect(() => {
-        if (!cardStorageKey) {
+        let cancelled = false;
+        if (!user?.id) {
             setSavedCards([]);
             return;
         }
-
-        const storedCards = localStorage.getItem(cardStorageKey);
-        if (storedCards) {
+        (async () => {
             try {
-                setSavedCards(JSON.parse(storedCards));
+                const cards = await listSavedCards();
+                if (!cancelled) setSavedCards(cards);
             } catch {
-                setSavedCards([]);
+                if (!cancelled) setSavedCards([]);
             }
-        } else {
-            setSavedCards([]);
-        }
-    }, [cardStorageKey]);
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [user?.id]);
 
     useEffect(() => {
         if (user) {
@@ -214,42 +207,43 @@ const AccountPage: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Save a new card to the current user's own localStorage bucket.
-    const handleAddCard = () => {
+    // Save a new card to the backend for the current user.
+    const handleAddCard = async () => {
         if (!validateCardForm()) return;
-        if (!cardStorageKey) {
+        if (!user?.id) {
             setProfileMessage("Please wait for account data to load before saving a card.");
             return;
         }
 
-        const digitsOnly = cardNumber.replace(/\D/g, "");
+        try {
+            const newCard = await addSavedCard({
+                cardName: cardName.trim(),
+                cardNumber: cardNumber.replace(/\D/g, ""),
+                expiryDate,
+                cvv,
+                billingAddress: billingAddress.trim()
+            });
+            setSavedCards((prev) => [...prev, newCard]);
 
-        const newCard: SavedCard = {
-            id: Date.now(),
-            cardName: cardName.trim(),
-            cardLast4: digitsOnly.slice(-4),
-            expiryDate,
-            billingAddress: billingAddress.trim()
-        };
-
-        const updatedCards = [...savedCards, newCard];
-        setSavedCards(updatedCards);
-        localStorage.setItem(cardStorageKey, JSON.stringify(updatedCards));
-
-        setCardName("");
-        setCardNumber("");
-        setExpiryDate("");
-        setCvv("");
-        setBillingAddress("");
-        setErrors({});
+            setCardName("");
+            setCardNumber("");
+            setExpiryDate("");
+            setCvv("");
+            setBillingAddress("");
+            setErrors({});
+        } catch (err) {
+            setProfileMessage(err instanceof Error ? err.message : "Failed to save card.");
+        }
     };
 
-    // Remove a saved card by id from both state and the user's localStorage bucket.
-    const handleRemoveCard = (cardId: number) => {
-        if (!cardStorageKey) return;
-        const updatedCards = savedCards.filter((c) => c.id !== cardId);
-        setSavedCards(updatedCards);
-        localStorage.setItem(cardStorageKey, JSON.stringify(updatedCards));
+    // Remove a saved card for the current user.
+    const handleRemoveCard = async (cardId: number) => {
+        try {
+            await removeSavedCard(cardId);
+            setSavedCards((prev) => prev.filter((c) => c.id !== cardId));
+        } catch (err) {
+            setProfileMessage(err instanceof Error ? err.message : "Failed to remove card.");
+        }
     };
 
     return (

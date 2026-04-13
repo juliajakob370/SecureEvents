@@ -13,6 +13,7 @@ internal static class DbInitializer
 
         EnsureDatabase(connectionString, serviceLabel);
         CreateMissingTables(db, serviceLabel);
+        HardenSavedCardsTable(db, serviceLabel);
     }
 
     private static void EnsureDatabase(string connectionString, string serviceLabel)
@@ -109,6 +110,75 @@ internal static class DbInitializer
             tables.Add(reader.GetString(0));
         }
         return tables;
+    }
+
+    private static void HardenSavedCardsTable(DbContext db, string serviceLabel)
+    {
+        const string sql = """
+            IF OBJECT_ID(N'dbo.SavedCards', N'U') IS NULL
+                RETURN;
+
+            ALTER TABLE dbo.SavedCards ALTER COLUMN CardName NVARCHAR(50) NOT NULL;
+            ALTER TABLE dbo.SavedCards ALTER COLUMN CardLast4 NVARCHAR(4) NOT NULL;
+            ALTER TABLE dbo.SavedCards ALTER COLUMN ExpiryDate NVARCHAR(5) NOT NULL;
+            ALTER TABLE dbo.SavedCards ALTER COLUMN BillingAddress NVARCHAR(150) NOT NULL;
+
+            IF NOT EXISTS (
+                SELECT 1
+                FROM sys.foreign_keys
+                WHERE name = N'FK_SavedCards_Users_UserId'
+                  AND parent_object_id = OBJECT_ID(N'dbo.SavedCards'))
+            BEGIN
+                ALTER TABLE dbo.SavedCards WITH CHECK
+                ADD CONSTRAINT FK_SavedCards_Users_UserId
+                FOREIGN KEY (UserId) REFERENCES dbo.Users(Id) ON DELETE CASCADE;
+            END;
+
+            IF NOT EXISTS (
+                SELECT 1
+                FROM sys.indexes
+                WHERE name = N'IX_SavedCards_UserId_IsDeleted'
+                  AND object_id = OBJECT_ID(N'dbo.SavedCards'))
+            BEGIN
+                CREATE INDEX IX_SavedCards_UserId_IsDeleted
+                ON dbo.SavedCards(UserId, IsDeleted);
+            END;
+
+            IF NOT EXISTS (
+                SELECT 1
+                FROM sys.check_constraints
+                WHERE name = N'CK_SavedCards_CardLast4_Format'
+                  AND parent_object_id = OBJECT_ID(N'dbo.SavedCards'))
+            BEGIN
+                ALTER TABLE dbo.SavedCards
+                ADD CONSTRAINT CK_SavedCards_CardLast4_Format
+                CHECK (CardLast4 LIKE '[0-9][0-9][0-9][0-9]');
+            END;
+
+            IF NOT EXISTS (
+                SELECT 1
+                FROM sys.check_constraints
+                WHERE name = N'CK_SavedCards_ExpiryDate_Format'
+                  AND parent_object_id = OBJECT_ID(N'dbo.SavedCards'))
+            BEGIN
+                ALTER TABLE dbo.SavedCards
+                ADD CONSTRAINT CK_SavedCards_ExpiryDate_Format
+                CHECK (
+                    ExpiryDate LIKE '0[1-9]/[0-9][0-9]'
+                    OR ExpiryDate LIKE '1[0-2]/[0-9][0-9]'
+                );
+            END;
+            """;
+
+        try
+        {
+            db.Database.ExecuteSqlRaw(sql);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[{serviceLabel}] SavedCards hardening failed: {ex.Message}");
+            throw;
+        }
     }
 
     private static bool IsAlreadyExists(Exception ex) =>

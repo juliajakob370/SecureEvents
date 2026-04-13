@@ -618,7 +618,219 @@ public class UsersController : ControllerBase
         return Ok(new { message = "Payment verification successful" });
     }
 
+    [Authorize(Policy = "OwnerOrAdmin")]
+    [HttpGet("me/cards")]
+    public async Task<IActionResult> ListMyCards()
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(claim, out var userId))
+        {
+            return Unauthorized(new { message = "Not logged in" });
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId && !x.IsDeleted);
+        if (user == null)
+        {
+            return Unauthorized(new { message = "Invalid token" });
+        }
+
+        if (user.IsSuspended)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "Account suspended" });
+        }
+
+        var cards = await _context.SavedCards
+            .Where(c => c.UserId == userId && !c.IsDeleted)
+            .OrderByDescending(c => c.CreatedAt)
+            .ThenByDescending(c => c.Id)
+            .Select(c => new SavedCardResponse(c.Id, c.CardName, c.CardLast4, c.ExpiryDate, c.BillingAddress))
+            .ToListAsync();
+
+        return Ok(cards);
+    }
+
+    [Authorize(Policy = "OwnerOrAdmin")]
+    [HttpPost("me/cards")]
+    public async Task<IActionResult> AddMyCard([FromBody] SaveCardRequest request)
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(claim, out var userId))
+        {
+            return Unauthorized(new { message = "Not logged in" });
+        }
+
+        var user = await _context.Users.FindAsync(userId);
+        if (user == null || user.IsDeleted)
+        {
+            return Unauthorized(new { message = "Invalid token" });
+        }
+
+        if (user.IsSuspended)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "Account suspended" });
+        }
+
+        // OWASP A02 FIXED: Full PAN and CVV are never persisted; only the last
+        // four digits and non-sensitive metadata are retained.
+        var normalizedCardName = NormalizeSpaces(request.CardName);
+        var normalizedBillingAddress = NormalizeSpaces(request.BillingAddress);
+        var normalizedExpiryDate = request.ExpiryDate.Trim();
+        var digitsOnly = new string(request.CardNumber.Where(char.IsDigit).ToArray());
+
+        if (string.IsNullOrWhiteSpace(normalizedCardName) || normalizedCardName.Length > 50)
+        {
+            return BadRequest(new { message = "Card name is invalid." });
+        }
+
+        if (string.IsNullOrWhiteSpace(normalizedBillingAddress) || normalizedBillingAddress.Length > 150)
+        {
+            return BadRequest(new { message = "Billing address is invalid." });
+        }
+
+        if (digitsOnly.Length != 16)
+        {
+            return BadRequest(new { message = "Card number must be exactly 16 digits." });
+        }
+
+        var cardLast4 = digitsOnly.Substring(digitsOnly.Length - 4, 4);
+
+        if (!PassesLuhnCheck(digitsOnly))
+        {
+            return BadRequest(new { message = "Card number is invalid." });
+        }
+
+        if (!IsExpiryDateValid(normalizedExpiryDate, out var expiryEndUtc))
+        {
+            return BadRequest(new { message = "Expiry date must be in MM/YY format." });
+        }
+
+        if (expiryEndUtc < DateTime.UtcNow)
+        {
+            return BadRequest(new { message = "Card has expired." });
+        }
+
+        var existingCard = await _context.SavedCards
+            .FirstOrDefaultAsync(c =>
+                c.UserId == userId &&
+                !c.IsDeleted &&
+                c.CardLast4 == cardLast4 &&
+                c.ExpiryDate == normalizedExpiryDate &&
+                c.CardName == normalizedCardName &&
+                c.BillingAddress == normalizedBillingAddress);
+
+        if (existingCard != null)
+        {
+            return Conflict(new { message = "This card is already saved." });
+        }
+
+        var card = new SavedCard
+        {
+            UserId = userId,
+            CardName = normalizedCardName,
+            CardLast4 = cardLast4,
+            ExpiryDate = normalizedExpiryDate,
+            BillingAddress = normalizedBillingAddress,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _context.SavedCards.Add(card);
+        await _context.SaveChangesAsync();
+        await _loggingClient.LogAsync("card-saved", $"Card saved for user {user.Email}");
+
+        return Ok(new SavedCardResponse(card.Id, card.CardName, card.CardLast4, card.ExpiryDate, card.BillingAddress));
+    }
+
+    [Authorize(Policy = "OwnerOrAdmin")]
+    [HttpDelete("me/cards/{id:int}")]
+    public async Task<IActionResult> RemoveMyCard(int id)
+    {
+        var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(claim, out var userId))
+        {
+            return Unauthorized(new { message = "Not logged in" });
+        }
+
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId && !x.IsDeleted);
+        if (user == null)
+        {
+            return Unauthorized(new { message = "Invalid token" });
+        }
+
+        if (user.IsSuspended)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new { message = "Account suspended" });
+        }
+
+        // OWASP A01 FIXED: Row is scoped by UserId so one account cannot delete another's card.
+        var card = await _context.SavedCards
+            .FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId && !c.IsDeleted);
+
+        if (card == null)
+        {
+            return NotFound(new { message = "Card not found" });
+        }
+
+        card.IsDeleted = true;
+        card.DeletedAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
+        await _loggingClient.LogAsync("card-removed", $"Card {id} removed for user {userId}");
+
+        return Ok(new { message = "Card removed" });
+    }
+
     private static string BuildCode() => Random.Shared.Next(100000, 999999).ToString();
+
+    private static string NormalizeSpaces(string value) =>
+        string.Join(" ", value.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+
+    private static bool IsExpiryDateValid(string expiryDate, out DateTime expiryEndUtc)
+    {
+        expiryEndUtc = default;
+        var parts = expiryDate.Split('/');
+        if (parts.Length != 2 ||
+            !int.TryParse(parts[0], out var month) ||
+            !int.TryParse(parts[1], out var shortYear) ||
+            month < 1 ||
+            month > 12 ||
+            shortYear < 0 ||
+            shortYear > 99)
+        {
+            return false;
+        }
+
+        var year = 2000 + shortYear;
+        expiryEndUtc = new DateTime(year, month, DateTime.DaysInMonth(year, month), 23, 59, 59, DateTimeKind.Utc);
+        return true;
+    }
+
+    private static bool PassesLuhnCheck(string digits)
+    {
+        var sum = 0;
+        var shouldDouble = false;
+
+        for (var i = digits.Length - 1; i >= 0; i--)
+        {
+            var digit = digits[i] - '0';
+            if (digit < 0 || digit > 9)
+            {
+                return false;
+            }
+
+            if (shouldDouble)
+            {
+                digit *= 2;
+                if (digit > 9)
+                {
+                    digit -= 9;
+                }
+            }
+
+            sum += digit;
+            shouldDouble = !shouldDouble;
+        }
+
+        return sum % 10 == 0;
+    }
 
     private async Task<string> IssueRefreshTokenAsync(int userId)
     {

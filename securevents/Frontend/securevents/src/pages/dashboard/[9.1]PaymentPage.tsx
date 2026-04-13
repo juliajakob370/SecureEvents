@@ -9,6 +9,7 @@ import { requestPaymentCode, verifyPaymentCode } from "../../api/authApi";
 import { checkoutPayment } from "../../api/paymentApi";
 import { createBooking } from "../../api/bookingApi";
 import { getEventAvailability } from "../../api/eventApi";
+import { addSavedCard, listSavedCards, SavedCard } from "../../api/cardApi";
 
 // Type for selected event.
 type SelectedEvent = {
@@ -23,15 +24,6 @@ type SelectedEvent = {
     description: string;
     status: string;
     capacity: number;
-};
-
-// Type for locally saved card.
-type SavedCard = {
-    id: number;
-    cardName: string;
-    cardLast4: string;
-    expiryDate: string;
-    billingAddress: string;
 };
 
 // Payment page.
@@ -73,39 +65,31 @@ const PaymentPage: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [sendingCode, setSendingCode] = useState(false);
 
-    // Cards are scoped per-user so checkout never sees another account's saved cards.
-    const cardStorageKey = user?.id ? `secureEventsCards:${user.id}` : null;
-
-    // Load only the current user's saved cards.
+    // Load only the current user's saved cards from the backend.
     useEffect(() => {
-        if (!cardStorageKey) {
+        let cancelled = false;
+        if (!user?.id) {
             setSavedCards([]);
             setSelectedCardId(null);
             return;
         }
-
-        const storedCards = localStorage.getItem(cardStorageKey);
-
-        if (storedCards) {
+        (async () => {
             try {
-                const parsedCards: SavedCard[] = JSON.parse(storedCards);
-                setSavedCards(parsedCards);
-
-                if (parsedCards.length > 0) {
-                    setSelectedCardId(parsedCards[0].id);
-                } else {
-                    setSelectedCardId(null);
-                }
+                const cards = await listSavedCards();
+                if (cancelled) return;
+                setSavedCards(cards);
+                setSelectedCardId(cards.length > 0 ? cards[0].id : null);
             } catch (error) {
+                if (cancelled) return;
                 console.error("Failed to load saved cards:", error);
                 setSavedCards([]);
                 setSelectedCardId(null);
             }
-        } else {
-            setSavedCards([]);
-            setSelectedCardId(null);
-        }
-    }, [cardStorageKey]);
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [user?.id]);
 
     // Selected card details.
     const selectedCard = useMemo(() => {
@@ -130,6 +114,16 @@ const PaymentPage: React.FC = () => {
 
         if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
             newErrors.expiryDate = "Expiry must be in MM/YY format.";
+        } else {
+            const [mm, yy] = expiryDate.split("/").map(Number);
+            const expiryMonth = mm;
+            const expiryYear = 2000 + yy;
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+                newErrors.expiryDate = "This card has expired.";
+            }
         }
 
         if (!/^\d{3,4}$/.test(cvv)) {
@@ -144,39 +138,39 @@ const PaymentPage: React.FC = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    // Save a new card without storing CVV, keyed by the current user.
-    const handleAddNewCard = () => {
+    // Save a new card to the backend; the server keeps only last4 plus non-sensitive metadata.
+    const handleAddNewCard = async () => {
         if (!validateNewCard()) {
             return;
         }
 
-        if (!cardStorageKey) {
+        if (!user?.id) {
             setVerificationMessage("Please wait for account data to load before saving a card.");
             return;
         }
 
-        const digitsOnly = cardNumber.replace(/\D/g, "");
+        try {
+            const newCard = await addSavedCard({
+                cardName: cardName.trim(),
+                cardNumber: cardNumber.replace(/\D/g, ""),
+                expiryDate,
+                cvv,
+                billingAddress: billingAddress.trim()
+            });
 
-        const newCard: SavedCard = {
-            id: Date.now(),
-            cardName: cardName.trim(),
-            cardLast4: digitsOnly.slice(-4),
-            expiryDate,
-            billingAddress: billingAddress.trim()
-        };
+            setSavedCards((prev) => [...prev, newCard]);
+            setSelectedCardId(newCard.id);
 
-        const updatedCards = [...savedCards, newCard];
-        setSavedCards(updatedCards);
-        localStorage.setItem(cardStorageKey, JSON.stringify(updatedCards));
-        setSelectedCardId(newCard.id);
-
-        setCardName("");
-        setCardNumber("");
-        setExpiryDate("");
-        setCvv("");
-        setBillingAddress("");
-        setShowNewCardForm(false);
-        setErrors({});
+            setCardName("");
+            setCardNumber("");
+            setExpiryDate("");
+            setCvv("");
+            setBillingAddress("");
+            setShowNewCardForm(false);
+            setErrors({});
+        } catch (err) {
+            setVerificationMessage(err instanceof Error ? err.message : "Failed to save card.");
+        }
     };
 
     // Send verification code to user email before payment confirmation.

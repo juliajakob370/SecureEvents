@@ -63,11 +63,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
 
     // Logout current user.
     const logout = async () => {
-        // Clear user-scoped localStorage data (e.g. saved payment cards)
-        // BEFORE wiping the user state so we still have the id for the key.
-        if (user?.id) {
-            localStorage.removeItem(`secureEventsCards:${user.id}`);
-        }
         await logoutUser();
         setUser(null);
     };
