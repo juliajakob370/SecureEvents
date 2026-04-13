@@ -254,7 +254,7 @@ const AccountPage: React.FC = () => {
             {/* Header */}
             <Header
                 centerType="title"
-                title="My Account"
+                title="MY ACCOUNT"
                 showHome={true}
             />
 
