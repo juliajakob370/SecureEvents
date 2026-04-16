@@ -3,7 +3,7 @@
 
 With SecurEvents ***Secure comes first***.
 
-##About SecurEvents
+About SecurEvents
 The SecurEvents application is designed to solve **security issues commonly found in event booking and management systems** like:
     [X] Weak authentication
     [X] Broken access control
