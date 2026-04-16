@@ -7,9 +7,13 @@ With SecurEvents ***Secure comes first***.
 About SecurEvents
 -
 The SecurEvents application is designed to solve **security issues commonly found in event booking and management systems** like:
-    [X] Weak authentication
-    [X] Broken access control
-    [X] Insecure Data Handling
+
+    🔓 Weak authentication
+    
+    🔓 Broken access control
+    
+    🔓 Insecure Data Handling
+    
 Our app aims to address these common vulnerabilities and offer a **secure solution**
 
 The app allows users to:
