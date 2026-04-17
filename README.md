@@ -31,7 +31,7 @@ How to Run SecurEvents
 1. Clone this repository!
 2. Navigate to the cloned folder and the [securevents](securevents/) directory inside of it
    
-    <img width="353" height="136" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
+    <img width="400" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
 -
 **Setting up the Backend**
 1. Inside of the [securevents](securevents/) directory open up the [Backend](securevents/Backend) folder
