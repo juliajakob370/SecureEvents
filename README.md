@@ -31,27 +31,27 @@ How to Run SecurEvents
 1. Clone this repository!
 2. Navigate to the cloned folder and the [securevents](securevents/) directory inside of it
    
-    <img width="707" height="273" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
-
+    <img width="353" height="136" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
+-
 **Setting up the Backend**
 1. Inside of the [securevents](securevents/) directory open up the [Backend](securevents/Backend) folder
    
-   <img width="650" height="210" alt="image" src="https://github.com/user-attachments/assets/1dfb42f4-f977-4f80-bd74-3b496cdb924c" />
+   <img width="325" height="105" alt="image" src="https://github.com/user-attachments/assets/1dfb42f4-f977-4f80-bd74-3b496cdb924c" />
 
 2. Open the Backend.sln file in Visual Studio
 3. Update the connection string in the app settings
 4. Once it's open in Visual Studio navigate and set up the multi-application start
 5. Start the backend
 6. Now the backend is running! Leave all of these console windows open!
-
+-
 **Setting up the Frontend**
 1. Go back into the file explorer and navigate back into the [securevents](securevents/) directory
 
-   <img width="707" height="273" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
+   <img width="453" height="137" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
    
 2. Open up the [Frontend](securevents/Frontend/) folder
    
-   <img width="650" height="210" alt="image" src="https://github.com/user-attachments/assets/fa9d8867-49df-4580-968b-8a3cecfe4ec1" />
+   <img width="325" height="105" alt="image" src="https://github.com/user-attachments/assets/fa9d8867-49df-4580-968b-8a3cecfe4ec1" />
 
 4. Inside of the [Frontend](securevents/Frontend/) folder open up the [securevents](securevents/Frontend/securevents/)
 5. While inside of this folder click in the file path and type `cmd` - this will open the command prompt
