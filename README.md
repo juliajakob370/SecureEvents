@@ -50,9 +50,11 @@ How to Run SecurEvents
 
 
    
-5. Once it's open in Visual Studio navigate and set up the multi-application start
-6. Start the backend
-7. Now the backend is running! Leave all of these console windows open!
+5. Then go to the the startup item in Visual Studio and click the dropdown arrow
+   <img width="800" alt="image" src="https://github.com/user-attachments/assets/c80877e3-e2a6-4413-a927-242262456680" />
+
+7. Start the backend
+8. Now the backend is running! Leave all of these console windows open!
 
 ## Setting up the Frontend
 1. Go back into the file explorer and navigate back into the [securevents](securevents/) directory
