@@ -50,7 +50,7 @@ How to Run SecurEvents
 
 
    
-5. Next set up the start button to run all four microservices at the same time:
+4. Next set up the start button to run all four microservices at the same time:
    
     a. Go to the start button and click the dropdown arrow
     
@@ -66,11 +66,11 @@ How to Run SecurEvents
 
     d. Select "Ok" to save the changes
 
-7. Press Start
+5. Press Start
 
    <img width="800" alt="image" src="https://github.com/user-attachments/assets/23b43b26-fc93-4bf5-9461-642807c9ca66" />
 
-9. Now the backend is running! 4 consoles should appear - leave all of these console windows open!
+6. Now the backend is running! 4 consoles should appear - leave all of these console windows open!
 
    <img width="1918" height="987" alt="image" src="https://github.com/user-attachments/assets/4b24496b-d2de-460b-9c80-6f8b38b1d2f7" />
 
@@ -84,11 +84,26 @@ How to Run SecurEvents
    
    <img width="650" height="210" alt="image" src="https://github.com/user-attachments/assets/fa9d8867-49df-4580-968b-8a3cecfe4ec1" />
 
-4. Inside of the [Frontend](securevents/Frontend/) folder open up the [securevents](securevents/Frontend/securevents/)
-5. While inside of this folder click in the file path and type `cmd` - this will open the command prompt
+3. Inside of the [Frontend](securevents/Frontend/) folder open up the [securevents](securevents/Frontend/securevents/)
+
+   <img width="700" alt="image" src="https://github.com/user-attachments/assets/04d77845-c852-466e-88c0-089e31ec42da" />
+
+4. While inside of this folder click in the file path and type `cmd` and enter - this will open the command prompt
+   
+   <img width="856" height="308" alt="image" src="https://github.com/user-attachments/assets/eaabc4a9-def8-4526-a28c-bf266a6d5030" />
+
 6. Inside of the command prompt type `npm install` and enter
 7. Once that finishes executing type in `npm run build` and enter
 8. Once that is finished executing type in `npm start` and enter - this will start up the application in your browser. The frontend is now running!
 
 
+Additional Notes
+-
+- Real payments and email services have not yet been deployed - as such the OTP codes can be found highlighted in one of the backend consoles whenever you need to submit a code
+  
+- To test the admin features create an account for the email `admin@secureevents.com`
+
+App Preview
+-
+Coming soon!
 
