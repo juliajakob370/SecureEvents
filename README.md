@@ -52,20 +52,19 @@ How to Run SecurEvents
    
 5. Next set up the start button to run all four microservices at the same time:
    
-    a. Go to the start button that says "http" and click the dropdown arrow
+    a. Go to the start button and click the dropdown arrow
+    
+   <img width="800" alt="image" src="https://github.com/user-attachments/assets/48881bc4-10b5-4a38-8cd6-c99694bee48d" />
 
     b. Select "Configure Startup Projects" from the dropdown
 
-   <img width="707" height="586" alt="image" src="https://github.com/user-attachments/assets/3ad74695-05a3-4db9-9116-18d2d33dcbef" />
+   <img height="500" alt="image" src="https://github.com/user-attachments/assets/4e072807-6e31-40f9-8445-15ddc8d06e0e" />
 
     c. Configure the settings to be "Mulitple Startup Projects" and set all Project Actions to start
 
    <img width="800" alt="image" src="https://github.com/user-attachments/assets/6578f5f2-a4a5-41d4-9225-7d644dee522c" />
 
     d. Select "Ok" to save the changes
-
-   <img width="997" height="684" alt="image" src="https://github.com/user-attachments/assets/7940745b-58ca-4d6f-b99f-3c99d96f105b" />
-
 
 7. Press Start
 
@@ -90,7 +89,6 @@ How to Run SecurEvents
 6. Inside of the command prompt type `npm install` and enter
 7. Once that finishes executing type in `npm run build` and enter
 8. Once that is finished executing type in `npm start` and enter - this will start up the application in your browser. The frontend is now running!
-
 
 
 
