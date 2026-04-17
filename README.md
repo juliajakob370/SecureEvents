@@ -26,16 +26,17 @@ The app allows users to:
 
 For more information about the design process, security evaluations and solutions check out our presentation [here!](https://stuconestogacon-my.sharepoint.com/:p:/g/personal/jjakob3896_conestogac_on_ca/IQAfmjKkqyvdRrzKO56jDdtgAeB-0hviBxuq6R08WYmvg5E?e=J7TroJ&nav=eyJzSWQiOjI1NiwiY0lkIjo0MDY3NTM5MDU2fQ)
 
-
 How to Run SecurEvents
 -
 1. Clone this repository!
 2. Navigate to the cloned folder and the [securevents](securevents/) directory inside of it
-
+   
+    <img width="707" height="273" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
 
 **Setting up the Backend**
 1. Inside of the [securevents](securevents/) directory open up the [Backend](securevents/Backend) folder
-   <img width="707" height="273" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
+   
+   <img width="650" height="210" alt="image" src="https://github.com/user-attachments/assets/1dfb42f4-f977-4f80-bd74-3b496cdb924c" />
 
 2. Open the Backend.sln file in Visual Studio
 3. Update the connection string in the app settings
@@ -45,12 +46,18 @@ How to Run SecurEvents
 
 **Setting up the Frontend**
 1. Go back into the file explorer and navigate back into the [securevents](securevents/) directory
+
+   <img width="707" height="273" alt="image" src="https://github.com/user-attachments/assets/93bdd996-5060-4a2b-b3ce-d0126fcf0a25" />
+   
 2. Open up the [Frontend](securevents/Frontend/) folder
-3. Inside of the [Frontend](securevents/Frontend/) folder open up the [securevents](securevents/Frontend/securevents/)
-4. While inside of this folder click in the file path and type `cmd` - this will open the command prompt
-5. Inside of the command prompt type `npm install` and enter
-6. Once that finishes executing type in `npm run build` and enter
-7. Once that is finished executing type in `npm start` and enter - this will start up the application in your browser. The frontend is now running!
+   
+   <img width="650" height="210" alt="image" src="https://github.com/user-attachments/assets/fa9d8867-49df-4580-968b-8a3cecfe4ec1" />
+
+4. Inside of the [Frontend](securevents/Frontend/) folder open up the [securevents](securevents/Frontend/securevents/)
+5. While inside of this folder click in the file path and type `cmd` - this will open the command prompt
+6. Inside of the command prompt type `npm install` and enter
+7. Once that finishes executing type in `npm run build` and enter
+8. Once that is finished executing type in `npm start` and enter - this will start up the application in your browser. The frontend is now running!
 
 
 
