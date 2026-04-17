@@ -42,7 +42,8 @@ How to Run SecurEvents
    
    <img width="500" alt="image" src="https://github.com/user-attachments/assets/fc68b04a-fdce-4cc5-af6b-a1272d1c92be" />
 
-3. Update the Server value in the connection strings in the appsettings.json files of [EventManagementService](securevents/Backend/EventManagementService/appsettings.json/), [LoggingService](securevents/Backend/LoggingService/appsettings.json/), and [UserManagementService](securevents/Backend/UserManagementService/appsettings.json/)
+3. Update the Server values for the SecureEventConnection in the appsettings.json files of [EventManagementService](securevents/Backend/EventManagementService/appsettings.json/), [LoggingService](securevents/Backend/LoggingService/appsettings.json/), and [UserManagementService](securevents/Backend/UserManagementService/appsettings.json/) to fit your SQL Server connection string.
+   The connection string is currently set to: `"SecureEventConnection": "Server=localhost;Database=SecureEvent;Integrated Security=true;TrustServerCertificate=true;"`
 
    <img height="550" alt="image" src="https://github.com/user-attachments/assets/06d562c5-3a43-4267-bd68-b332195cc4e9" />
 
